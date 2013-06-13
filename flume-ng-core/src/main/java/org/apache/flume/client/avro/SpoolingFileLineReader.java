@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.flume.Channel;
 import org.apache.flume.ChannelSelector;
@@ -199,10 +200,19 @@ public class SpoolingFileLineReader implements LineReader {
     /* It's possible that the last read took us just up to a file boundary.
      * If so, try to roll to the next file, if there is one. */
     if (outLine == null) {
+      /* Before rename a log file to a completed one, we first verify the queue
+       * whether empty or not. Because if agent crash before the channel
+       * queue not empty, that means file still in transfer, it may lead
+       * to a duplicated data in HDFS or other sinks. */
       while(!eventsOfCurrentFileAllDelivered()) {
-    	;//TODO to be review
+        logger.info("Memory channel is not empty, " +
+                    "for file {}, this log appeared one time is normal.",  currentFile.get().getFile().getName());
+        try {
+			TimeUnit.MILLISECONDS.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
       }
-      logger.debug("Events of current file {} have all been delivered.", currentFile.get().getFile().getName());
       retireCurrentFile();
       currentFile = getNextFile();
       if (!currentFile.isPresent()) {

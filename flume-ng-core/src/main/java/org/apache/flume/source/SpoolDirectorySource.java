@@ -112,20 +112,23 @@ Configurable, EventDrivenSource {
         SpoolDirectorySourceConfigurationConstants.DEFAULT_BUFFER_MAX_LINE_LENGTH);
   }
 
+  /*
+   * LineEntry has been modify for de-duplicate.
+   * We pick up the SPReadTimestamp and line number from current lineEntry and add them to event header.
+   * The current LineEntry structure is SPReadTimestamp:lineNum:loglineContent.
+   * We first use hard code instead of extracting from configure to verify our improvement.
+   */
   private Event createEvent(String lineEntry, String filename) {
 	logger.debug("lineEntry: {}", lineEntry);
 	String SPReadTimestamp = lineEntry.substring(0, lineEntry.indexOf(':'));
-	logger.debug("firstReadTimestamp: {}", SPReadTimestamp);
 	String lineNum = lineEntry.substring(14, lineEntry.indexOf(':', 14));
-	logger.debug("lineNum: {}", lineNum);
 	lineEntry = lineEntry.substring(lineEntry.indexOf(":", 14) + 1);
-	logger.debug("lineEntry last: {}", lineEntry);
     Event out = EventBuilder.withBody(lineEntry.getBytes());
     if (fileHeader) {
       out.getHeaders().put(fileHeaderKey, filename);
     }
     out.getHeaders().put("SPRTS", SPReadTimestamp);
-	out.getHeaders().put("line", lineNum);	//We use hard code first to verify our improvement.
+    out.getHeaders().put("line", lineNum);
     return out;
   }
 
