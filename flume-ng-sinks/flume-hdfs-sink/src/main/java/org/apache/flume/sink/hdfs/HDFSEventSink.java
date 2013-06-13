@@ -441,6 +441,7 @@ public class HDFSEventSink extends AbstractSink implements Configurable {
       // flush all pending buckets before committing the transaction
       for (BucketWriter bucketWriter : writers) {
         flush(bucketWriter);
+        LOG.debug("flush all pending buckets before committing the transaction");
       }
 
       transaction.commit();

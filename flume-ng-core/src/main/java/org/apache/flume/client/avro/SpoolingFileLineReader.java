@@ -30,7 +30,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.flume.Channel;
+import org.apache.flume.ChannelSelector;
 import org.apache.flume.FlumeException;
+import org.apache.flume.channel.MemoryChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +83,9 @@ public class SpoolingFileLineReader implements LineReader {
   /** A flag to signal an un-recoverable error has occured. */
   private boolean disabled = false;
 
+  private ChannelSelector selector;
+  private long SPRTS;
+  private long lineCount;
   /**
    * Create a SpoolingFileLineReader to watch the given directory.
    *
@@ -131,6 +137,17 @@ public class SpoolingFileLineReader implements LineReader {
     return lastFileRead.get().getFile().getAbsolutePath();
   }
 
+  /**
+   * Add a method to transferring the file name instead of absolute path.
+   * @return
+   */
+  public String getLastFileReadForName() {
+    if (!lastFileRead.isPresent()) {
+      return null;
+    }
+    return lastFileRead.get().getFile().getName();
+  }
+
   @Override
   public String readLine() throws IOException {
     if (disabled) {
@@ -155,7 +172,7 @@ public class SpoolingFileLineReader implements LineReader {
   @Override
   /** Reads up to n lines from the current file. Returns an empty list if no
    *  files are left to read in the directory. */
-  public List<String> readLines(int n) throws IOException {
+  public List<String> readLines(int n) throws IOException, IllegalStateException {
     if (disabled) {
       throw new IllegalStateException("Reader has been disabled.");
     }
@@ -182,6 +199,10 @@ public class SpoolingFileLineReader implements LineReader {
     /* It's possible that the last read took us just up to a file boundary.
      * If so, try to roll to the next file, if there is one. */
     if (outLine == null) {
+      while(!eventsOfCurrentFileAllDelivered()) {
+    	;//TODO to be review
+      }
+      logger.debug("Events of current file {} have all been delivered.", currentFile.get().getFile().getName());
       retireCurrentFile();
       currentFile = getNextFile();
       if (!currentFile.isPresent()) {
@@ -202,6 +223,7 @@ public class SpoolingFileLineReader implements LineReader {
         disabled = true;
         throw new FlumeException("Encoutered line that was too long.");
       }
+      outLine = SPRTS + ":" + (++lineCount) + ":" + outLine;
       out.add(outLine);
       if (out.size() == n) { break; }
       outLine = currentFile.get().getReader().readLine();
@@ -210,6 +232,22 @@ public class SpoolingFileLineReader implements LineReader {
     committed = false;
     lastFileRead = currentFile;
     return out;
+  }
+
+  /**
+   * Verify that the Memory Channel queue is empty now.
+   * If then, it declare than all events of current file have been delivered to next node.
+   * @throws IllegalStateException
+   */
+  private boolean eventsOfCurrentFileAllDelivered() throws IllegalStateException {
+	Channel channel = selector.getAllChannels().get(0);
+	if (channel instanceof MemoryChannel) {	//Only memory channel faces the problem.
+	  return ((MemoryChannel) channel).isEmpty();
+	}
+	else {
+	  throw new IllegalStateException("A memory channel should be used in SpoolingDirectorySource, " +
+			  "please check the configure file!");
+	}
   }
 
   /**
@@ -288,12 +326,13 @@ public class SpoolingFileLineReader implements LineReader {
    * Find and open the oldest file in the chosen directory. If two or more
    * files are equally old, the file name with lower lexicographical value is
    * returned. If the directory is empty, this will return an absent option.
+   * ".log" files are changing file size all the time in our business, so we do not accept it.
    */
   private Optional<FileInfo> getNextFile() {
     /* Filter to exclude finished or hidden files */
     FileFilter filter = new FileFilter() {
       public boolean accept(File pathName) {
-        if ((pathName.getName().endsWith(completedSuffix)) ||
+        if ((pathName.getName().endsWith(completedSuffix)) || (pathName.getName().endsWith(".log")) ||
             (pathName.getName().startsWith("."))) {
           return false;
         }
@@ -322,6 +361,8 @@ public class SpoolingFileLineReader implements LineReader {
         BufferedReader reader = new BufferedReader(new FileReader(nextFile),
             bufferSize);
         reader.mark(bufferSize);
+        lineCount = 0;
+        SPRTS = System.currentTimeMillis();
         return Optional.of(new FileInfo(nextFile, reader));
       } catch (FileNotFoundException e) {
         // File could have been deleted in the interim
@@ -357,5 +398,13 @@ public class SpoolingFileLineReader implements LineReader {
   @Override
   public void close() throws IOException {
     // No-op
+  }
+
+  public ChannelSelector getSelector() {
+	return selector;
+  }
+
+  public void setSelector(ChannelSelector selector) {
+	this.selector = selector;
   }
 }

@@ -263,6 +263,7 @@ public class ChannelProcessor implements Configurable {
         tx.begin();
 
         reqChannel.put(event);
+        LOG.debug("PUT event into channel" + reqChannel.getName());
 
         tx.commit();
       } catch (Throwable t) {

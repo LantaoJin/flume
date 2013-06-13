@@ -50,6 +50,7 @@ Configurable, EventDrivenSource {
   private String spoolDirectory;
   private boolean fileHeader;
   private String fileHeaderKey;
+  private String SPRTSKey;
   private int batchSize;
   private int bufferMaxLines;
   private int bufferMaxLineLength;
@@ -112,10 +113,19 @@ Configurable, EventDrivenSource {
   }
 
   private Event createEvent(String lineEntry, String filename) {
+	logger.debug("lineEntry: {}", lineEntry);
+	String SPReadTimestamp = lineEntry.substring(0, lineEntry.indexOf(':'));
+	logger.debug("firstReadTimestamp: {}", SPReadTimestamp);
+	String lineNum = lineEntry.substring(14, lineEntry.indexOf(':', 14));
+	logger.debug("lineNum: {}", lineNum);
+	lineEntry = lineEntry.substring(lineEntry.indexOf(":", 14) + 1);
+	logger.debug("lineEntry last: {}", lineEntry);
     Event out = EventBuilder.withBody(lineEntry.getBytes());
     if (fileHeader) {
       out.getHeaders().put(fileHeaderKey, filename);
     }
+    out.getHeaders().put("SPRTS", SPReadTimestamp);
+	out.getHeaders().put("line", lineNum);	//We use hard code first to verify our improvement.
     return out;
   }
 
@@ -132,9 +142,12 @@ Configurable, EventDrivenSource {
     public void run() {
       try {
         while (true) {
+          if (reader.getSelector() == null) {
+          	reader.setSelector(getChannelProcessor().getSelector());
+  		  }
           List<String> strings = reader.readLines(batchSize);
           if (strings.size() == 0) { break; }
-          String file = reader.getLastFileRead();
+          String file = reader.getLastFileReadForName();
           List<Event> events = Lists.newArrayList();
           for (String s: strings) {
             counterGroup.incrementAndGet("spooler.lines.read");
@@ -146,7 +159,9 @@ Configurable, EventDrivenSource {
       }
       catch (Throwable t) {
         logger.error("Uncaught exception in Runnable", t);
-        if (t instanceof Error) {
+        if (t instanceof Exception) {
+			t.printStackTrace();
+		} else if (t instanceof Error) {
           throw (Error) t;
         }
       }

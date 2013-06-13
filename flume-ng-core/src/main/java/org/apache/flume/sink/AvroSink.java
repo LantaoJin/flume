@@ -307,6 +307,7 @@ public class AvroSink extends AbstractSink implements Configurable {
         }
         sinkCounter.addToEventDrainAttemptCount(size);
         client.appendBatch(batch);
+        logger.debug("Client appendBatch batch "+ size);
       }
 
       transaction.commit();

@@ -166,10 +166,10 @@ class BucketWriter {
    * open() is called by append()
    * @throws IOException
    */
-  private void open() throws IOException, InterruptedException {
+  private void open(final Event event) throws IOException, InterruptedException {
     runPrivileged(new PrivilegedExceptionAction<Void>() {
       public Void run() throws Exception {
-        doOpen();
+        doOpen(event);
         return null;
       }
     });
@@ -179,7 +179,7 @@ class BucketWriter {
    * doOpen() must only be called by open()
    * @throws IOException
    */
-  private void doOpen() throws IOException {
+  private void doOpen(Event event) throws IOException {
     if ((filePath == null) || (writer == null) || (formatter == null)) {
       throw new IOException("Invalid file settings");
     }
@@ -197,11 +197,17 @@ class BucketWriter {
       try {
         long counter = fileExtensionCounter.incrementAndGet();
         if (codeC == null) {
+          // Just Spooling direction source contain key "line"
+          if (event.getHeaders().containsKey("line") ) {
+        	filePath += event.getHeaders().get("line");
+          }
           bucketPath = filePath + "." + counter;
+          
           // FLUME-1645 - add suffix if specified
           if (fileSuffix != null && fileSuffix.length() > 0) {
             bucketPath += fileSuffix;
           }
+          
           // Need to get reference to FS using above config before underlying
           // writer does in order to avoid shutdown hook & IllegalStateExceptions
           fileSystem = new Path(bucketPath).getFileSystem(config);
@@ -361,13 +367,13 @@ class BucketWriter {
         throw new IOException("This bucket writer was closed due to idling and this handle " +
             "is thus no longer valid");
       }
-      open();
+      open(event);
     }
 
     // check if it's time to rotate the file
     if (shouldRotate()) {
       close();
-      open();
+      open(event);
     }
 
     // write the event

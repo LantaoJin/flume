@@ -368,4 +368,8 @@ public class MemoryChannel extends BasicChannelSemantics {
     //Each event occupies at least 1 slot, so return 1.
     return 1;
   }
+
+  public boolean isEmpty () {
+	return queue.isEmpty();
+  }
 }

@@ -329,7 +329,21 @@ public class BucketPath {
 
         replacement = headers.get(matcher.group(2));
         if (replacement == null) {
-          replacement = "";
+	        //Just only cause by business
+	        if(headers.containsKey("file")) {
+	      	  String [] fileNameArray = headers.get("file").split("\\.");
+	      	  if (matcher.group(2).equalsIgnoreCase("timepath"))
+	      	  {
+	      		  replacement = fileNameArray[fileNameArray.length-2] 
+	      				  + "/" + fileNameArray[fileNameArray.length-1];
+	      	  }
+	      	  else {
+	      		  replacement = "";
+	      	  }
+	        }
+	        else {
+	      	  replacement = "";
+	        }
 //          LOG.warn("Tag " + matcher.group(2) + " not found");
         }
       } else {
