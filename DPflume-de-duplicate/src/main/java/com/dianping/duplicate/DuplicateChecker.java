@@ -43,7 +43,7 @@ public class DuplicateChecker implements Runnable {
 	private HDFSOperater operater;
 	private Context appContext;
 	//TODO review
-	private static final String APP_START_KEY = "start";
+	
 	private boolean findUndone;
 	public DuplicateChecker(String appPathStr, HDFSOperater operater, Context appContext) {
 	    this.appContext = appContext;
@@ -63,10 +63,34 @@ public class DuplicateChecker implements Runnable {
 			currentHourStr = dateUtil.getCurrentDateStr();
 			
 			/* Get the startHourStr for processing the oldest failed direction.
-			 * On first time, startHour equal to the currentHour. */
-			startHourStr = appContext.getString(APP_START_KEY);
+			 * On first time, startHour need to load from file(local or HDFS). */
+			startHourStr = appContext.getString(BasicConfigurationConstants.APP_START_KEY);
 			if (startHourStr == null) {
-			    startHourStr = currentHourStr;
+			    Path appPath = new Path(appPathStr);
+			    if (!operater.checkPathExists(appPath)) {
+			        // If running to this branch, it means the procedure for this app is running first time.
+			        logger.error("App log HDFS direction " + appPathStr +
+			        		" is not exist, task end this time." +
+			        		" Please mkdir for it and add a file " +
+			        		"\"_" + BasicConfigurationConstants.APP_START_KEY + "\"" +
+			        		" under this direction manually");
+			        return;
+			    } else {
+			        // If running to this branch, it means the procedure for this app restart.
+			        try {
+			            startHourStr = operater.readStartFile();
+                    } catch (IOException e) {
+                        logger.error("Load app_start_str value faid, it should not" +
+                        		" be happened, task end this time.");
+                        e.printStackTrace();
+                        return;
+                    }
+			        if (startHourStr.length() == 0) {
+			            logger.error("App_start_str value is empty string, it should not" +
+                                " be happened, task end this time.");
+			            return;
+                    }
+                }
             }
 
 			//两个日期中间相差几个小时的计算公式，可以跨天
@@ -81,15 +105,16 @@ public class DuplicateChecker implements Runnable {
 				if (!findUndone) {
 					startHourStr = workingHourStr;
 					//Need to create a HDFS file to keep start information.
-					operater.writeStartFile(APP_START_KEY, startHourStr);
-	                appContext.put(APP_START_KEY, startHourStr);
+					operater.writeStartFile(startHourStr);
+	                appContext.put(BasicConfigurationConstants.APP_START_KEY, startHourStr);
 				}
 				
 				Path workingPath = dateUtil.getPathFromStr(workingHourStr, appPathStr);
 				
-				//如果workPath不存在，说明路径信息错误，抛出异常，程序停止ֹ
+				//WorkPath not exist, it maybe the newest direction or something exception.
 				if (!operater.checkPathExists(workingPath)) {
-					throw new Exception("Working path is illegal.");
+				    logger.warn("Working path {} is not exist.", workingPath);
+					break;
 				}
 				//判断当前目录是否已经创建了success文件。存在则不处理
 				if (operater.checkSuccessFileExist(workingHourStr)) {
@@ -98,6 +123,10 @@ public class DuplicateChecker implements Runnable {
 				//判断当前文件
 				if (!checkCollectorsAvailable()) {
 					//TODO Alarm! Cause by collectors are unrecovered.
+				    if (findUndone) {
+                        
+                    }
+				    logger.error("Collectors are not all ready, task end this time.");
 					break;
 				}
 				//判断当前目录正在接受或已经接受了来自所有数据来源机器的文件（同一个应用）
@@ -127,8 +156,6 @@ public class DuplicateChecker implements Runnable {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace(); 
 		} catch (Exception e) {
 			e.printStackTrace(); 
 		} catch (Throwable e) {
@@ -199,6 +226,7 @@ public class DuplicateChecker implements Runnable {
 				try {
 					operater.discardDuplicateContent(entry.getKey().getPath(), it.next().getValue() - 1);
 				} catch (IOException e) {
+				    logger.warn("Failed to discard duplicate data");
 					e.printStackTrace();
 					allTmpHandleSucc = false;
 				}
@@ -209,13 +237,14 @@ public class DuplicateChecker implements Runnable {
 
 	public boolean checkCollectorsAvailable() {
 		URLConnection connection;
-		String[] hostnames = appContext.getString(BasicConfigurationConstants.MACHINES).split(" ");
-		for (String hostname : hostnames) {
-			//example: port key is "machines.hostname1.port"
-		    String port = appContext.getString(BasicConfigurationConstants.MACHINES_PREFIX + 
-		            hostname + BasicConfigurationConstants.PORT);
+		String[] collectors = appContext.getString(BasicConfigurationConstants.COLLECTORS).split(" ");
+		if (collectors.length == 0) {
+		    logger.warn("Can't get collectors, please verify that configure file content is correct.");
+            return false;
+        }
+		for (String collector : collectors) {
 		    /* http://<hostname>:<port>/metrics */
-			String urlPath = "http://" + hostname + ":" + port + "/metrics";
+			String urlPath = "http://" + collector + "/metrics";
 			logger.info("Connecting url {}.", urlPath);
 			try {
 				URL url = new URL(urlPath);
@@ -223,7 +252,8 @@ public class DuplicateChecker implements Runnable {
 				connection.setConnectTimeout(5000);
 				connection.connect();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.warn("Connecting to url {} fail, please check whether need to modify" +
+						" collectors info in configure file.");
 				return false;
 			}
 		}
@@ -235,7 +265,7 @@ public class DuplicateChecker implements Runnable {
 		Set actualHostSet = new HashSet<String>();
 		Set configHostSet = new HashSet<String>();
 		
-		String[] hostnames = appContext.getString(BasicConfigurationConstants.MACHINES).split(" ");
+		String[] hostnames = appContext.getString(BasicConfigurationConstants.APP_HOSTNAMES).split(" ");
 		if(!Collections.addAll(configHostSet, hostnames)) {
 			throw new Error("Error that collections add faild. It should not be happen.");
 		}
@@ -247,7 +277,7 @@ public class DuplicateChecker implements Runnable {
 		for (FileStatus st : status) {
 			actualHostSet.add(getOriginHostnameOfLog(st.getPath().getName()));
 		}
-		allFound = actualHostSet.containsAll(configHostSet);
+		allFound = actualHostSet.containsAll(configHostSet);//TODO SOMETHING INCORRECT
 		
 		return allFound;
 	}

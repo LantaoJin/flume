@@ -5,8 +5,12 @@
  */
 package com.dianping.duplicate;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,6 +24,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.security.SecurityUtil;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +45,8 @@ public class Application {
 
 	    try {
 	      if (application.parseOptions()) {
-	    	  application.run();
+	    	  application.loadConfig();
+	          application.run();
 	      }
 	    } catch (ParseException e) {
 	      logger.error(e.getMessage());
@@ -76,27 +83,38 @@ public class Application {
 	    return true;
 	  }
 	
-	public void run() {
-		
-		//schedule the config file watcher
-		FileWatcherRunnable fileWatcherTask = new FileWatcherRunnable(configurationFile);
-		ScheduledExecutorService configExec = Executors.newSingleThreadScheduledExecutor();
-		configExec.scheduleWithFixedDelay(fileWatcherTask, 0, 30, TimeUnit.SECONDS);
+	public void run() throws Exception{
+		/* Schedule the configuration file watcher, it is a good feature.
+		 * But now, we use to load configuration file one time in this version.*/
+//		FileWatcherRunnable fileWatcherTask = new FileWatcherRunnable(configurationFile);
+//	    ScheduledExecutorService configExec = Executors.newSingleThreadScheduledExecutor();
+//		configExec.scheduleWithFixedDelay(fileWatcherTask, 0, 30, TimeUnit.SECONDS);
+
 		Context appContext; 
 		//schedule the check task
-		Configuration conf = new Configuration();   
+		Configuration conf = new Configuration();
+		UserGroupInformation.setConfiguration(conf);
+		try {
+            SecurityUtil.login(conf, "deduplicate.hadoop.keytab.file", "deduplicate.hadoop.principal");
+        } catch (IOException e) {
+            logger.error("Faild to login with keytab security.");
+            e.printStackTrace();
+            throw e;
+        }
 	    FileSystem hdfs = null;
 		try {
 			hdfs = FileSystem.get(conf);
 		} catch (IOException e) {
+		    logger.error("Failed to get FileSystem.");
 			e.printStackTrace();
+			throw e;
 		}
 		
 		ScheduledExecutorService checkerThreadPool = null;
 		
 		Set<String> apps = DDConfiguration.getAppConfigMap().keySet();
 		if (apps == null) {
-            logger.error("Configuration load fail. Procedure is going to shutdown.");
+            logger.error("Failed to load configuration file.");
             return;
         }
 		
@@ -115,15 +133,47 @@ public class Application {
 		for (String appName : apps) {
 		    appContext = DDConfiguration.getConfigurationFor(appName);
 		    if (appName.equals(BasicConfigurationConstants.COMMOM_CONFIG)) {
-                continue;//This case has been handled.
+                continue;//Continue because that this case has been handled.
             }
-		    String appPathStr = appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH) + "/" + appName;
+		    String appPathStr = appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH) + appName;
     		HDFSOperater operater = new HDFSOperater(hdfs, appPathStr);
     		
     		DuplicateChecker checker = new DuplicateChecker(appPathStr, operater, appContext);
     		checkerThreadPool.scheduleWithFixedDelay(checker, 0, appContext.getLong(BasicConfigurationConstants.CHECK_PERIOD), TimeUnit.SECONDS);
 		}
 	}
+	
+	public void loadConfig() {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(configurationFile));
+            Properties properties = new Properties();
+            properties.load(reader);
+            DDConfiguration conf = new DDConfiguration(properties);
+            Enumeration<?> propertyNames = properties.propertyNames();
+            while (propertyNames.hasMoreElements()) {
+              String name = (String) propertyNames.nextElement();
+              String value = properties.getProperty(name);
+
+              if (!conf.addRawProperty(name, value)) {
+                logger.warn("Configuration property ignored: " + name + " = " + value);
+                continue;
+              }
+            }
+        } catch (IOException e) {
+            logger.error("Unable to load file:" + configurationFile
+                      + " (I/O failure) - Exception follows.", e);
+        } finally {
+          if (reader != null) {
+            try {
+              reader.close();
+            } catch (IOException ex) {
+                logger.warn(
+                  "Unable to close file reader for file: " + configurationFile, ex);
+            }
+          }
+        }
+    }
 	
 	public String[] getArgs() {
 		return args;
