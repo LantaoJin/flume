@@ -198,9 +198,11 @@ class BucketWriter {
         long counter = fileExtensionCounter.incrementAndGet();
         /* Just Spooling direction source contain key "line"
          * But on codec mode, our first version of java de-duplicate procedure temporarily cannot handle it.*/
+        LOG.debug("before add line {}", filePath);
         if (event.getHeaders().containsKey("line") ) {
           filePath += event.getHeaders().get("line");
         }
+        LOG.debug("after add line {}", filePath);
         if (codeC == null) {
           bucketPath = filePath + "." + counter;
           // FLUME-1645 - add suffix if specified
