@@ -119,15 +119,16 @@ Configurable, EventDrivenSource {
    * We first use hard code instead of extracting from configure to verify our improvement.
    */
   private Event createEvent(String lineEntry, String filename) {
-	logger.debug("lineEntry: {}", lineEntry);
-	String SPReadTimestamp = lineEntry.substring(0, lineEntry.indexOf(':'));
-	String lineNum = lineEntry.substring(14, lineEntry.indexOf(':', 14));
-	lineEntry = lineEntry.substring(lineEntry.indexOf(":", 14) + 1);
+    logger.debug("lineEntry: {}", lineEntry);
+    String SPReadTimestamp = lineEntry.substring(0, lineEntry.indexOf(':'));
+    String lineNum = lineEntry.substring(14, lineEntry.indexOf(':', 14));
+    lineEntry = lineEntry.substring(lineEntry.indexOf(":", 14) + 1);
     Event out = EventBuilder.withBody(lineEntry.getBytes());
     if (fileHeader) {
       out.getHeaders().put(fileHeaderKey, filename);
     }
     out.getHeaders().put("SPRTS", SPReadTimestamp);
+    logger.debug("line: {}",lineNum);
     out.getHeaders().put("line", lineNum);
     return out;
   }
