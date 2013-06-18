@@ -17,6 +17,7 @@ import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dianping.duplicate.configurate.BasicConfigurationConstants;
 import com.dianping.duplicate.util.DateUtil;
 
 public class HDFSOperater {
@@ -37,7 +38,7 @@ public class HDFSOperater {
 	public boolean retireTmpFile(Path tmpPath) {
 		Path parentPath = tmpPath.getParent();
 		String tmpName = tmpPath.getName();
-		if (!tmpName.endsWith("tmp")) {
+		if (!tmpName.endsWith(".tmp") || !tmpName.endsWith(".buf")) {
             return false;
         }
 		String dstName = tmpName.substring(0, tmpName.lastIndexOf('.'));
@@ -45,19 +46,18 @@ public class HDFSOperater {
 		try {
 			return fs.rename(tmpPath, dstPath);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		    logger.warn("Failed to rename {}", tmpPath);
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
 	public boolean touchSuccFile(Path parentPath) {
-	    logger.debug("testhaha");
 		Path sucesssFile = new Path(parentPath, "_success");
 		try {
 			out = fs.create(sucesssFile);
 		} catch (IOException e) {
-			logger.error("Touch success flag file fail!");
+			logger.warn("Failed to touch success flag file.");
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -71,11 +71,21 @@ public class HDFSOperater {
 		return true;
 	}
 	
+	public boolean mkdir(Path path) {
+        try {
+            return fs.mkdirs(path);
+        } catch (IOException e) {
+            logger.warn("HDFS may not work in operating.");
+            e.printStackTrace();
+        }
+        return false;
+    }
+	
 	public boolean checkPathExists(Path path) {
 		try {
 			return fs.exists(path);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.warn("HDFS may not work in operating.");
 			e.printStackTrace();
 		}
 		return false;
@@ -142,10 +152,10 @@ public class HDFSOperater {
 	
 	public void discardDuplicateContent(Path tmpPath, long endLineNumber) throws IOException{
 		String tmpName = tmpPath.getName();
-		String dstName = tmpName.substring(0, tmpName.lastIndexOf('.'));
-		Path completePath = new Path(tmpPath.getParent(), dstName);
+		String bufName = tmpName.substring(0, tmpName.lastIndexOf('.')).concat(".buf");
+		Path bufferedPath = new Path(tmpPath.getParent(), bufName);
 		try {
-			out = fs.create(completePath);
+			out = fs.create(bufferedPath);
 			in = fs.open(tmpPath);
 			//TODO to be review, If the file is a compression file, then what?
 			//We can use a buffer to writing first instead of flushing the whole content.
@@ -161,6 +171,11 @@ public class HDFSOperater {
 			}
 			out.flush();
 			out.sync();
+			//rename .buf to normal
+			if (!retireTmpFile(bufferedPath)) {
+			    logger.warn("Failed to rename file from \".buf\" to normal");
+                throw new IOException();
+            }
 		} finally {
 			try {
 				out.close();
@@ -171,9 +186,9 @@ public class HDFSOperater {
 		}
 	}
 	
-	public void writeStartFile(final String appStartKey, String appStartValue) {
-		try {
-			Path startKeyPath = new Path(appPathStr, "_" + appStartKey);
+	public void writeStartFile(String appStartValue) {
+	    Path startKeyPath = new Path(appPathStr, "_" + BasicConfigurationConstants.APP_START_KEY);
+	    try {
 			out = fs.create(startKeyPath, true);
 			out.write(appStartValue.getBytes());
 			out.flush();
@@ -184,25 +199,23 @@ public class HDFSOperater {
 			try {
 				out.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+			    logger.warn("Unable to close out stream for file: " + startKeyPath);
 			}
 		}
 	}
 	
-	//TODO should to be check return value not ""
-	public String readStartFile(final String appStartKey) {
-		Path startKeyPath = new Path(appPathStr, "_" + appStartKey);
+	//should to be check return value not ""
+	public String readStartFile() throws IOException{
+		Path startKeyPath = new Path(appPathStr, "_" + BasicConfigurationConstants.APP_START_KEY);
 		byte[] appStartValue = new byte[10];
 		try {
 			in = fs.open(startKeyPath);
 			in.read(appStartValue);
-		} catch (IOException e) {
-			e.printStackTrace();
 		} finally {
 			try {
 				in.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+			    logger.warn("Unable to close in stream for file: " + startKeyPath);
 			}
 		}
 		return (new String(appStartValue));

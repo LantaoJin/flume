@@ -22,7 +22,7 @@ public class TestHDFSOpeartor {
 	static final String FILE_NAME = "filemiddle_1370774126.log.2013-06-03.10+test84.hadoop+1370774412283+1.1370774325295.tmp";
 	static final String TMP_FILE_NAME = FILE_NAME + ".tmp";
 	static final String WORKING_HOUR_STR = "13060310"; 
-	static final String appPathStr = "hdfs://10.1.77.86:/user/workcron/lantao/";
+	static final String appPathStr = "hdfs://10.1.77.86:/user/workcron/openAPI/";
 	static DateUtil dateUtil = DateUtil.getInstance();
 	static Path appPath;
 	static Path appPathTmp;
@@ -52,6 +52,7 @@ public class TestHDFSOpeartor {
 
 	@Test
 	public void testRetireTmpFile() {
+//	    System.out.println(appPathTmp);
 		System.out.println(operater.retireTmpFile(appPathTmp)); 
 	}
 
@@ -90,13 +91,17 @@ public class TestHDFSOpeartor {
 
 	@Test
 	public void testWriteStartFile() {
-		operater.writeStartFile("lantao.start", "13060310");
-		operater.writeStartFile("lantao.start", "13060311");
+		operater.writeStartFile("13060310");
+		operater.writeStartFile("13060311");
 	}
 
 	@Test
 	public void testReadStartFile() {
-		System.out.println(operater.readStartFile("lantao.start"));
+		try {
+            System.out.println(operater.readStartFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 }

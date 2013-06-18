@@ -1,5 +1,5 @@
 /**
- * 
+ * This class is not used in this version.
  * @company dianping.com
  * @author lantao.jin
  */
