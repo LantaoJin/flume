@@ -40,6 +40,7 @@ public class TestBucketPath {
     cal.set(Calendar.MILLISECOND, 234);
     headers = new HashMap<String, String>();
     headers.put("timestamp", String.valueOf(cal.getTimeInMillis()));
+    headers.put("file", "accesslog.log.2013-05-30.01");
   }
   @Test
   public void testDateFormatHours() {
@@ -101,7 +102,7 @@ public class TestBucketPath {
   @Test
   public void testDateFormatTimeZone(){
     TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
-    String test = "%c";
+    String test = "%c/love/%{timepath}";
     String escapedString = BucketPath.escapeString(
         test, headers, utcTimeZone, false, Calendar.HOUR_OF_DAY, 12);
     System.out.println("Escaped String: " + escapedString);

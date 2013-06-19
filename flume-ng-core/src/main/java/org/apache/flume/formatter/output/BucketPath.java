@@ -334,8 +334,14 @@ public class BucketPath {
 	      	  String [] fileNameArray = headers.get("file").split("\\.");
 	      	  if (matcher.group(2).equalsIgnoreCase("timepath"))
 	      	  {
-	      		  replacement = fileNameArray[fileNameArray.length-2] 
-	      				  + "/" + fileNameArray[fileNameArray.length-1];
+	      	    if (fileNameArray[fileNameArray.length-1].length() == 2) {
+	      	      //that means escape direction string by hours
+	      	      replacement = fileNameArray[fileNameArray.length-2] 
+	                  + "/" + fileNameArray[fileNameArray.length-1];
+              } else {
+                //that means escape direction string by day
+                replacement = fileNameArray[fileNameArray.length-1];
+              }
 	      	  }
 	      	  else {
 	      		  replacement = "";
