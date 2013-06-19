@@ -19,9 +19,10 @@
     <name>io.compression.codec.lzo.class</name>
     <value>com.hadoop.compression.lzo.LzoCodec</value>
   </property>
-
+ 
   <property>
     <name>hadoop.security.authentication</name>
+    <!-- <value>simple</value> -->
     <value>kerberos</value>
   </property>
   
@@ -37,7 +38,7 @@
   
   <property>
     <name>deduplicate.hadoop.keytab.file</name>
-    <value>/data/home/workcron/.keytab</value>
+    <value>/home/hadoop/.keytab</value>
   </property>
-  
+
 </configuration>

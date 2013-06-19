@@ -6,6 +6,7 @@
 package com.dianping.duplicate;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
@@ -327,6 +328,7 @@ public class DuplicateChecker implements Runnable {
 
 	public boolean checkCollectorsAvailable() {
 		URLConnection connection;
+		InputStream is = null;
 		String[] collectors = appContext.getString(BasicConfigurationConstants.COLLECTORS).split(" ");
 		if (collectors.length == 0) {
 		    logger.warn("Can't get collectors, please verify that configure file content is correct.");
@@ -339,12 +341,22 @@ public class DuplicateChecker implements Runnable {
 			try {
 				URL url = new URL(urlPath);
 				connection = url.openConnection();
+				is = connection.getInputStream();
 				connection.setConnectTimeout(5000);
 				connection.connect();
 			} catch (Exception e) {
 				logger.warn("Connecting to url {} fail, please check whether need to modify" +
 						" collectors info in configure file.");
 				return false;
+			} finally {
+			    try {
+			        if (is != null) {
+			            is.close();
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to close input stream of URL connection");
+                    e.printStackTrace();
+                }
 			}
 		}
 		return true;
