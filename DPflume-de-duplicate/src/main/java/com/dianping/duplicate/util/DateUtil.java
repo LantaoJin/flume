@@ -19,6 +19,7 @@ import org.apache.hadoop.fs.Path;
 public class DateUtil {
 	private SimpleDateFormat formatForCount;
 	private SimpleDateFormat formatForPath;
+	private SimpleDateFormat formatForAlarm;
 	private Calendar calendar;
 	
 	
@@ -37,6 +38,7 @@ public class DateUtil {
 	private DateUtil() {
 		this.formatForCount = new SimpleDateFormat("yyMMddHH");
 		this.formatForPath = new SimpleDateFormat("/yyyy-MM-dd/HH");
+		this.formatForAlarm = new SimpleDateFormat("mm");
 		this.calendar =  Calendar.getInstance();
 	}
 	
@@ -44,6 +46,11 @@ public class DateUtil {
 		Date curruent = calendar.getTime();
 		return formatForCount.format(curruent);
 	}
+	
+	public int getCurrentMin() {
+        Date current = calendar.getTime();
+        return Integer.parseInt(formatForAlarm.format(current));
+    }
 	
 	public Path getPathFromStr(String str, String appPathStr) throws ParseException {
 		return new Path(appPathStr + 

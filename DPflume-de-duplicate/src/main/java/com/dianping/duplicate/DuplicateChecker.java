@@ -10,22 +10,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
@@ -49,7 +41,6 @@ public class DuplicateChecker implements Runnable {
 	private final String appPathStr;
 	private HDFSOperater operater;
 	private Context appContext;
-	//TODO review
 	
 	private boolean findUndone;
 	public DuplicateChecker(String appPathStr, HDFSOperater operater, Context appContext) {
@@ -68,6 +59,7 @@ public class DuplicateChecker implements Runnable {
 			DateUtil dateUtil = DateUtil.getInstance();
 			//日期的格式处理，为了获取小时数
 			currentHourStr = dateUtil.getCurrentDateStr();
+			int currentMin = dateUtil.getCurrentMin();
 			
 			/* Get the startHourStr for processing the oldest failed direction.
 			 * On first time, startHour need to load from file(local or HDFS). */
@@ -94,7 +86,7 @@ public class DuplicateChecker implements Runnable {
                     }
 			        if (startHourStr.length() == 0) {
 			            logger.error("App_start_str value is empty string, it should not" +
-                                " be happened, task end this time.");
+                                " be happened. Task end this time.");
 			            return;
                     }
                 }
@@ -119,7 +111,7 @@ public class DuplicateChecker implements Runnable {
 				
 				//WorkPath not exist, it maybe the newest direction or something exception.
 				if (!operater.checkPathExists(workingPath)) {
-				    logger.warn("Working path {} is not exist.", workingPath);
+				    logger.warn("Working path {} is not exist. Task end this time.", workingPath);
 					break;
 				}
 				//判断当前目录是否已经创建了success文件。存在则不处理
@@ -128,16 +120,15 @@ public class DuplicateChecker implements Runnable {
 				}
 				//判断当前文件
 				if (!checkCollectorsAvailable()) {
-					//TODO Alarm! Cause by collectors are unrecovered.
-				    if (findUndone) {
-                        
-                    }
-				    logger.error("Collectors are not all ready, task end this time.");
+				    logger.error("Collectors are not all ready. Task end this time.");
 					break;
 				}
 				//判断当前目录正在接受或已经接受了来自所有数据来源机器的文件（同一个应用）
 				if(!checkAllSourceReceiving(workingPath)) {
-					//TODO Alarm!! out of time 
+				    if (currentMin > Integer.parseInt(appContext.getString(
+				            BasicConfigurationConstants.ALARM_BEGIN_TIME))) {
+				        logger.error("Receive data from all source timeout");
+                    }
 					findUndone = true;
 					continue;
 				}
@@ -158,7 +149,8 @@ public class DuplicateChecker implements Runnable {
 				}
 			}
 		} catch (NumberFormatException e) {
-			logger.error("HDFS file name format is illegal! It not shoud be happen.");
+			logger.error("NumberFormat Parse failed. It not shoud" +
+					" be happen, please check \".conf\" file.");
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -206,6 +198,9 @@ public class DuplicateChecker implements Runnable {
 	public boolean cleanUpStaleFile(Path workingPath) {
 
 	    FileStatus[] fileStatus = operater.listStatus(workingPath);
+	    if (fileStatus == null) {
+            return false;
+        }
 	    // Begin to handle tmp file, build a file map with sorted set of identify files
         HashMap<String, SortedSet<IdentifyFile>> idFileMap = buildFileMap(fileStatus, true);
 
@@ -242,7 +237,9 @@ public class DuplicateChecker implements Runnable {
 	 */
 	public boolean handleTmpFile(Path workingPath) {
         FileStatus[] fileStatus = operater.listStatus(workingPath);
-        
+        if (fileStatus == null) {
+            return false;
+        }
         int i = 0;
         for (FileStatus st : fileStatus) {
             if (st.getPath().getName().endsWith(".tmp")) {

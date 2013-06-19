@@ -7,7 +7,6 @@ package com.dianping.duplicate;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -62,7 +61,9 @@ public class HDFSOperater {
 			return false;
 		} finally {
 			try {
-				out.close();
+			    if (out != null) {
+			        out.close();
+                }
 			} catch (IOException e) {
 				e.printStackTrace();
 				logger.warn("Close hdfs out put stream fail!");
@@ -102,21 +103,18 @@ public class HDFSOperater {
 			Path f = new Path(dateUtil.getPathFromStr(hourStr, appPathStr), new Path("_success"));
 			return fs.exists(f);
 		} catch (ParseException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
-	//TODO check not null
+	//the caller must check that result is not null
 	public FileStatus[] listStatus(Path path) {
 		try {
 			return fs.listStatus(path);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -133,10 +131,11 @@ public class HDFSOperater {
 		try {
 			out = fs.create(bufferedPath);
 			in = fs.open(tmpPath);
-			//TODO to be review, If the file is a compression file, then what?
+			//TODO If the file is a compression file, then what?
 			//We can use a buffer to writing first instead of flushing the whole content.
 			//To refer the SpoolingFileLineRead.java
-			for (int i = 0; i < endLineNumber; i++ ) {
+			long beginNumber = getLineNumberOfLog(tmpName) - 1;
+			for (long i = beginNumber; i < endLineNumber; i++ ) {
 				byte[] byteOfline = in.readLine().getBytes();
 				out.write(byteOfline);
 				out.write('\n');
@@ -149,13 +148,20 @@ public class HDFSOperater {
 			out.sync();
 			//rename .buf to normal
 			if (!retireTmpFile(bufferedPath)) {
-			    logger.warn("Failed to rename file from \".buf\" to normal");
+			    logger.warn("Failed to rename file from \".buf\" to normal.");
                 throw new IOException();
+            }
+			if (!deleteFile(tmpPath)) {
+                logger.warn("Failed to delete old tmp file.");
             }
 		} finally {
 			try {
-				out.close();
-				in.close();
+			    if (out != null) {
+			        out.close();
+                }
+				if (in != null) {
+				    in.close();
+                }
 			} catch (IOException e) {
 				logger.warn("Unable to close in and out stream for file: " + tmpName, e);
 			}
@@ -163,17 +169,20 @@ public class HDFSOperater {
 	}
 	
 	public void writeStartFile(String appStartValue) {
-	    Path startKeyPath = new Path(appPathStr, "_" + BasicConfigurationConstants.APP_START_KEY);
+	    Path startKeyPath = new Path(appPathStr, "_" + BasicConfigurationConstants.APP_START_KEY + ".buf");
 	    try {
 			out = fs.create(startKeyPath, true);
 			out.write(appStartValue.getBytes());
 			out.flush();
-			out.close();
 		} catch (IOException e) {
+		    logger.warn("Exception occur in write start file: " + startKeyPath);
 			e.printStackTrace();
 		} finally {
 			try {
-				out.close();
+			    if (out != null) {
+			        out.close();
+                }
+				retireTmpFile(startKeyPath);
 			} catch (IOException e) {
 			    logger.warn("Unable to close out stream for file: " + startKeyPath);
 			}
@@ -189,11 +198,18 @@ public class HDFSOperater {
 			in.read(appStartValue);
 		} finally {
 			try {
-				in.close();
+			    if (in != null) {
+			        in.close();
+                }
 			} catch (IOException e) {
 			    logger.warn("Unable to close in stream for file: " + startKeyPath);
 			}
 		}
 		return (new String(appStartValue));
 	}
+	
+    private long getLineNumberOfLog(String filename) {
+        String[] spilts = filename.split("\\+");
+        return Long.parseLong(spilts[3].substring(0, spilts[3].indexOf('.')));
+    }
 }
