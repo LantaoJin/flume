@@ -38,18 +38,18 @@ public class HDFSOperater {
 	public boolean retireTmpFile(Path tmpPath) {
 		Path parentPath = tmpPath.getParent();
 		String tmpName = tmpPath.getName();
-		if (!tmpName.endsWith(".tmp") || !tmpName.endsWith(".buf")) {
-            return false;
+		if (tmpName.endsWith(".tmp") || tmpName.endsWith(".buf")) {
+		    String dstName = tmpName.substring(0, tmpName.lastIndexOf('.'));
+	        Path dstPath = new Path(parentPath, dstName);
+	        try {
+	            return fs.rename(tmpPath, dstPath);
+	        } catch (IOException e) {
+	            logger.warn("Failed to rename {}", tmpPath);
+	            e.printStackTrace();
+	            return false;
+	        }
         }
-		String dstName = tmpName.substring(0, tmpName.lastIndexOf('.'));
-		Path dstPath = new Path(parentPath, dstName);
-		try {
-			return fs.rename(tmpPath, dstPath);
-		} catch (IOException e) {
-		    logger.warn("Failed to rename {}", tmpPath);
-			e.printStackTrace();
-		}
-		return false;
+		return true;
 	}
 	
 	public boolean touchSuccFile(Path parentPath) {
@@ -91,6 +91,10 @@ public class HDFSOperater {
 		return false;
 	}
 	
+	public boolean checkStartFileExists(Path path) {
+        return checkPathExists(new Path(path, "_" + BasicConfigurationConstants.APP_START_KEY));
+    }
+	
 
 	public boolean checkSuccessFileExist(String hourStr) {
 		DateUtil dateUtil = DateUtil.getInstance();
@@ -118,36 +122,8 @@ public class HDFSOperater {
 		return null;
 	}
 
-	public boolean deleteFile(Path path) {
-		try {
-			return fs.deleteOnExit(path);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public boolean deleteFileOnRetry(Path path) {
-		int retryCount = 0;
-		try {
-			while (retryCount++ < 3) {
-				if (fs.deleteOnExit(path)) {
-					break;
-				}
-				TimeUnit.SECONDS.sleep(30);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if (retryCount > 3) {
-			return false;
-		} else {
-			return true;
-		}
-		
+	public boolean deleteFile(Path path) throws IOException{
+		return fs.delete(path, false);
 	}
 	
 	public void discardDuplicateContent(Path tmpPath, long endLineNumber) throws IOException{

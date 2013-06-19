@@ -4,12 +4,14 @@ import static org.junit.Assert.*;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.dianping.duplicate.DuplicateChecker;
 import com.dianping.duplicate.HDFSOperater;
+import com.dianping.duplicate.configurate.BasicConfigurationConstants;
 import com.dianping.duplicate.configurate.Context;
 
 public class TestDuplicateChecker {
@@ -26,10 +28,11 @@ public class TestDuplicateChecker {
 		Configuration configuration = new Configuration();
 		FileSystem fs = FileSystem.get(configuration);
 		operater = new HDFSOperater(fs, appPathStr);
-		context.put(APP_NAME + ".start", "13060310");
+		context.put(".start", "13060310");
 		context.put("app." + APP_NAME +".machines", "10.1.77.85 10.1.77.86");
 		context.put("app." + APP_NAME +".machines." + "10.1.77.85" + ".port", 34545);
 		context.put("app." + APP_NAME +".machines." + "10.1.77.86" + ".port", 34545);
+		context.put(BasicConfigurationConstants.APP_HOSTNAMES, " test85.hadoop");
 		dc = new DuplicateChecker(APP_NAME, operater, context);
 	}
 
@@ -65,7 +68,7 @@ public class TestDuplicateChecker {
 
 	@Test
 	public void testCheckAllSourceReceiving() {
-		System.out.println(dc.checkCollectorsAvailable());
+		ret = dc.checkAllSourceReceiving(new Path(appPathStr, "2013-06-17/13"));
 	}
 
 	@Test

@@ -75,13 +75,8 @@ public class TestHDFSOpeartor {
 	}
 
 	@Test
-	public void testDeleteFile() throws ParseException {
+	public void testDeleteFile() throws ParseException, IOException {
 		ret = operater.deleteFile(new Path(dateUtil.getPathFromStr(WORKING_HOUR_STR, appPathStr), "_success"));
-	}
-
-	@Test
-	public void testDeleteFileOnRetry() throws ParseException {
-		ret = operater.deleteFileOnRetry(new Path(dateUtil.getPathFromStr(WORKING_HOUR_STR, appPathStr), "_success"));
 	}
 
 	@Test

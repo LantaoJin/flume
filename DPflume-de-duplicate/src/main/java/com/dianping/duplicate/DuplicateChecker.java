@@ -9,16 +9,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
@@ -67,7 +73,7 @@ public class DuplicateChecker implements Runnable {
 			startHourStr = appContext.getString(BasicConfigurationConstants.APP_START_KEY);
 			if (startHourStr == null) {
 			    Path appPath = new Path(appPathStr);
-			    if (!operater.checkPathExists(appPath)) {
+			    if (!operater.checkPathExists(appPath) || !operater.checkStartFileExists(appPath)) {
 			        // If running to this branch, it means the procedure for this app is running first time.
 			        logger.error("App log HDFS direction " + appPathStr +
 			        		" is not exist, task end this time." +
@@ -78,10 +84,10 @@ public class DuplicateChecker implements Runnable {
 			    } else {
 			        // If running to this branch, it means the procedure for this app restart.
 			        try {
-			            startHourStr = operater.readStartFile();
+			            startHourStr = operater.readStartFile().trim();
                     } catch (IOException e) {
-                        logger.error("Load app_start_str value faid, it should not" +
-                        		" be happened, task end this time.");
+                        logger.error("Load app_start_str value faid, the start file in " +
+                                appPathStr + "may not create, manually create first. Task end this time.");
                         e.printStackTrace();
                         return;
                     }
@@ -99,14 +105,13 @@ public class DuplicateChecker implements Runnable {
 			
 			//注意i从0开始，且i<=时间差值
 			for (int i = 0; i <= intervalHours; i++) {
-				workingHourStr = dateUtil.getWorkingHourStr(startHourStr, i);
+                workingHourStr = dateUtil.getWorkingHourStr(startHourStr, i);
 				
 				//一旦发现有未完成的，findUndone就变为true，此后除非线程重启，否则都无法再移动startHourStr指针
 				if (!findUndone) {
-					startHourStr = workingHourStr;
 					//Need to create a HDFS file to keep start information.
-					operater.writeStartFile(startHourStr);
-	                appContext.put(BasicConfigurationConstants.APP_START_KEY, startHourStr);
+					operater.writeStartFile(workingHourStr);
+	                appContext.put(BasicConfigurationConstants.APP_START_KEY, workingHourStr);
 				}
 				
 				Path workingPath = dateUtil.getPathFromStr(workingHourStr, appPathStr);
@@ -156,47 +161,77 @@ public class DuplicateChecker implements Runnable {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			e.printStackTrace(); 
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * 
-	 * @param workingPath
-	 * @return
-	 */
+	   
+    class IdentifyFile {
+        private String identifyName;
+        private long lineNum;
+        private long SPRTS;
+        private FileStatus st;
+        public IdentifyFile(String identifyName, long lineNum, long SPRTS, FileStatus st) {
+            this.identifyName = identifyName;
+            this.lineNum = lineNum;
+            this.SPRTS = SPRTS;
+            this.st = st;
+        }
+        
+        public String getIdentifyName() {
+            return identifyName;
+        }
+        
+        public long getLineNum() {
+            return lineNum;
+        }
+
+        public FileStatus getSt() {
+            return st;
+        }
+
+        public long getSPRTS() {
+            return SPRTS;
+        }
+        
+        public boolean isTmp() {
+            return st.getPath().getName().endsWith(".tmp");
+        }
+    }
+	
 	public boolean cleanUpStaleFile(Path workingPath) {
-		boolean allCleanUpSucc = true;
-		HashMap<String, SortedMap<FileStatus, Long>> fileMapper = new HashMap<String, SortedMap<FileStatus,Long>>();
-		FileStatus[] status = operater.listStatus(workingPath);
-		//为每一个文件排序，按文件名分桶，并使用sortedmap对具有相同纯粹文件名的文件根据读文件的时间戳进行排序。
-		for (FileStatus st : status) {
-			String fileName = st.getPath().getName();
-			if (fileMapper.containsKey(getPureLogName(fileName))) {
-				fileMapper.get(fileName).put(st, getReadTimestampOfLog(fileName));
-			} else {
-				SortedMap<FileStatus, Long> fileSelector = new TreeMap<FileStatus, Long>();
-				fileSelector.put(st, getReadTimestampOfLog(fileName));
-				fileMapper.put(getPureLogName(fileName), fileSelector);
-			}
-		}
-		//具有相同纯粹文件名的文件只要读取时间戳小于最大的时间戳，则删除。这里要注意的是具有相同纯粹文件名的多个可能具有相同时间戳，这是由于文件roll产生的
-		Collection<SortedMap<FileStatus,Long>> pureFileValues = fileMapper.values();
-		for (SortedMap<FileStatus, Long> fileSelector : pureFileValues) {
-			Set<FileStatus> fileStatus = fileSelector.keySet();
-			for (FileStatus st : fileStatus) {
-				if (fileSelector.get(st) < fileSelector.get(fileSelector.lastKey())) {
-					if (!operater.deleteFileOnRetry(st.getPath())) {
-						allCleanUpSucc = false;
-						break;
-					}
-				}
-			}
-		}
-		return allCleanUpSucc;
+
+	    FileStatus[] fileStatus = operater.listStatus(workingPath);
+	    // Begin to handle tmp file, build a file map with sorted set of identify files
+        HashMap<String, SortedSet<IdentifyFile>> idFileMap = buildFileMap(fileStatus, true);
+
+	    
+	    /* idFileMap is a map. Its key is a identify name strcat by log name and hostname,
+	     * and its value is a sorted set sorted by SPRTS from big to small.
+	     * When traversing in the same identify bucket, as long as its SPRTS
+	     * is less than last one's in sorted set,
+	     * it should be delete. */
+        for (String identifyName : idFileMap.keySet()) {
+            SortedSet<IdentifyFile> sortedSet = idFileMap.get(identifyName);
+            long biggestReadTimestamp = sortedSet.last().getSPRTS();
+            for (IdentifyFile identifyFile : sortedSet) {
+                if (identifyFile.getSPRTS() < biggestReadTimestamp) {
+                    try {
+                        if (!operater.deleteFile(identifyFile.getSt().getPath())) {
+                            return false;
+                        }
+                    } catch (IOException e) {
+                        logger.warn("Failed to delete stale data");
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+        }
+	    return true;
 	}
 	
 	/**
@@ -205,35 +240,90 @@ public class DuplicateChecker implements Runnable {
 	 * @return
 	 */
 	public boolean handleTmpFile(Path workingPath) {
-		boolean allTmpHandleSucc = true;
-		SortedMap<FileStatus, Long> fileSelector = new TreeMap<FileStatus, Long>();
-		FileStatus[] status = operater.listStatus(workingPath);
-		for (FileStatus st : status) {
-			String fileName = st.getPath().getName();
-			fileSelector.put(st, getLineNumberOfLog(fileName));
-		}
-		//tmp文件是最后一个，直接mv成正常文件
-		if (fileSelector.lastKey().getPath().getName().endsWith(".tmp")) {
-			if(!operater.retireTmpFile(fileSelector.lastKey().getPath())) {
-				allTmpHandleSucc = false;
-			}
-		}
-		
-		Set<Entry<FileStatus, Long>> entries = fileSelector.entrySet();
-		for (Iterator<Entry<FileStatus, Long>> it = entries.iterator(); it.hasNext(); ) {
-			Entry<FileStatus, Long> entry = it.next();
-			if (entry.getKey().getPath().getName().endsWith(".tmp")) {
-				try {
-					operater.discardDuplicateContent(entry.getKey().getPath(), it.next().getValue() - 1);
-				} catch (IOException e) {
-				    logger.warn("Failed to discard duplicate data");
-					e.printStackTrace();
-					allTmpHandleSucc = false;
-				}
-			}
-		}
-		return allTmpHandleSucc;
+        FileStatus[] fileStatus = operater.listStatus(workingPath);
+        
+        int i = 0;
+        for (FileStatus st : fileStatus) {
+            if (st.getPath().getName().endsWith(".tmp")) {
+                if (st.getModificationTime() + appContext.getLong(BasicConfigurationConstants.IDLE_TIME, 40000l)
+                        < System.currentTimeMillis() ) {
+                    logger.info("It's time to handle stable tmp file" + st.getPath());
+                } else {
+                    logger.info("The tmp file is not stable. Task end this time.");
+                    return false;
+                }
+            } else {
+                i++;
+            }
+        }
+        // There are no tmp in this direction
+        if (i == fileStatus.length) {
+            return true;
+        }
+        
+        // Begin to handle tmp file, build a file map with sorted set of identify files
+        HashMap<String, SortedSet<IdentifyFile>> idFileMap = buildFileMap(fileStatus, false);
+        /* Traversing the map keyset, deal with the tmp file.
+         * If catch a ArrayIndexOutOfBoundsException, it means the tmp file is one having biggest line number,
+         * another works , collector crashed in the idle time. Just change .tmp to normal.
+         * Else discard the duplicate data recursively. */
+        for (String identifyName : idFileMap.keySet()) {
+            SortedSet<IdentifyFile> sortedSet = idFileMap.get(identifyName);
+            Object[] idFiles = sortedSet.toArray();
+            for (int j = 0; j < idFiles.length; j++) {
+                if (((IdentifyFile)idFiles[j]).isTmp()) {
+                    try {
+                        operater.discardDuplicateContent(((IdentifyFile)idFiles[j]).getSt().getPath(), ((IdentifyFile)idFiles[j+1]).getLineNum() - 1);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        // Just change .tmp to normal
+                        if(!operater.retireTmpFile(((IdentifyFile)idFiles[j]).getSt().getPath())) {
+                            return false;
+                        }
+                    } catch (IOException e) {
+                        logger.warn("Failed to discard duplicate data");
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
 	}
+
+    private HashMap<String, SortedSet<IdentifyFile>> buildFileMap(FileStatus[] fileStatus, boolean isHandleSPRTS) {
+        HashMap<String, SortedSet<IdentifyFile>> idFileMap = new HashMap<String, SortedSet<IdentifyFile>>();
+        for (FileStatus st : fileStatus) {
+            String fileName = st.getPath().getName();
+
+            long lineNumber = getLineNumberOfLog(fileName);
+            long SPRTS = getReadTimestampOfLog(fileName);
+            String identifyName = getPureLogName(fileName) + getOriginHostnameOfLog(fileName);
+            if (idFileMap.containsKey(identifyName)) {
+                idFileMap.get(identifyName).add(new IdentifyFile(identifyName, lineNumber, SPRTS, st));
+            } else {
+                SortedSet<IdentifyFile> sortedTmpFiles;
+                if (isHandleSPRTS) {
+                    sortedTmpFiles = new TreeSet<IdentifyFile>(new Comparator<IdentifyFile>() {
+                        @Override
+                        public int compare(IdentifyFile o1, IdentifyFile o2) {//from small to big
+                            return o2.getSPRTS() > o1.getSPRTS() ? -1 : 1;
+                        }
+                    });
+                } else {
+                    sortedTmpFiles = new TreeSet<IdentifyFile>(new Comparator<IdentifyFile>() {
+                        @Override
+                        public int compare(IdentifyFile o1, IdentifyFile o2) {//from small to big
+                            return o2.getLineNum() > o1.getLineNum() ? -1 : 1;
+                        }
+                    });
+                }
+                
+                sortedTmpFiles.add(new IdentifyFile(identifyName, lineNumber, SPRTS, st));
+                idFileMap.put(identifyName, sortedTmpFiles);
+            }
+        }
+        return idFileMap;
+    }
 
 	public boolean checkCollectorsAvailable() {
 		URLConnection connection;
@@ -265,7 +355,7 @@ public class DuplicateChecker implements Runnable {
 		Set actualHostSet = new HashSet<String>();
 		Set configHostSet = new HashSet<String>();
 		
-		String[] hostnames = appContext.getString(BasicConfigurationConstants.APP_HOSTNAMES).split(" ");
+		String[] hostnames = appContext.getString(BasicConfigurationConstants.APP_HOSTNAMES).trim().split(" ");
 		if(!Collections.addAll(configHostSet, hostnames)) {
 			throw new Error("Error that collections add faild. It should not be happen.");
 		}
@@ -277,7 +367,7 @@ public class DuplicateChecker implements Runnable {
 		for (FileStatus st : status) {
 			actualHostSet.add(getOriginHostnameOfLog(st.getPath().getName()));
 		}
-		allFound = actualHostSet.containsAll(configHostSet);//TODO SOMETHING INCORRECT
+		allFound = actualHostSet.containsAll(configHostSet);
 		
 		return allFound;
 	}

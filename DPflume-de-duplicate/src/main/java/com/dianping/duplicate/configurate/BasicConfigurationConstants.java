@@ -10,7 +10,7 @@ public final class BasicConfigurationConstants {
     public static final String MAX_THREAD_POOL = "maxThreadPool";
 
     public static final String APP_START_KEY = "start";
-    
+    public static final String IDLE_TIME = "idleTimeout";
     public static final String PARENT_HDFS_PATH = "parentHdfsPath";
     public static final String APP_HOSTNAMES = "appHostnames";
     public static final String COLLECTORS = "collectors";

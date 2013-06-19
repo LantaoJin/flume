@@ -5,6 +5,6 @@
  */
 package com.dianping.duplicate.alarm;
 
-public class AlarmOperator {
+public interface AlarmOperator {
 
 }
