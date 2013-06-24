@@ -111,7 +111,10 @@ public class DuplicateChecker implements Runnable {
 				logger.info("Processing " + workingPath);
 				//WorkPath not exist, it maybe the newest direction or something exception.
 				if (!operater.checkPathExists(workingPath)) {
-				    logger.warn("Working path {} is not exist. Task end this time.", workingPath);
+				    if (currentMin > 3) {   //alarm should be later than the 3rd minute in each hours.
+				        logger.error("Working path {} is not exist. This could " +
+	                            "be the result of app crash. Task end this time.", workingPath);
+                    }
 					break;
 				}
 				//判断当前目录是否已经创建了success文件。存在则不处理
@@ -120,7 +123,8 @@ public class DuplicateChecker implements Runnable {
 				}
 				//判断当前文件
 				if (!checkCollectorsAvailable()) {
-				    logger.error("Collectors are not all ready. Task end this time.");
+				    logger.error("Collectors are not all ready. This could " +
+                                "be the result of collectors crash. Task end this time.");
 					break;
 				}
 				//判断当前目录正在接受或已经接受了来自所有数据来源机器的文件（同一个应用）
@@ -153,10 +157,13 @@ public class DuplicateChecker implements Runnable {
 					" be happen, please check \".conf\" file.");
 			e.printStackTrace();
 		} catch (ParseException e) {
+		    logger.error("Illegal type conversion. Task end this time. " + e);
 			e.printStackTrace();
 		} catch (RuntimeException e) {
+		    logger.error("Runtime exception. Task end this time. " + e);
 			e.printStackTrace(); 
 		} catch (Throwable e) {
+		    logger.error("Uncatched throwable exception. Task end this time. " + e);
 			e.printStackTrace();
 		}
 	}
