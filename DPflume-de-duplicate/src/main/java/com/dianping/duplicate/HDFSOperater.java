@@ -41,6 +41,9 @@ public class HDFSOperater {
 		    String dstName = tmpName.substring(0, tmpName.lastIndexOf('.'));
 	        Path dstPath = new Path(parentPath, dstName);
 	        try {
+	            if (fs.exists(dstPath)) {
+                deleteFile(dstPath);
+	            }
 	            return fs.rename(tmpPath, dstPath);
 	        } catch (IOException e) {
 	            logger.warn("Failed to rename {}", tmpPath);
@@ -146,22 +149,22 @@ public class HDFSOperater {
 			}
 			out.flush();
 			out.sync();
-			//rename .buf to normal
-			if (!retireTmpFile(bufferedPath)) {
-			    logger.warn("Failed to rename file from \".buf\" to normal.");
-                throw new IOException();
-            }
-			if (!deleteFile(tmpPath)) {
-                logger.warn("Failed to delete old tmp file.");
-            }
 		} finally {
 			try {
 			    if (out != null) {
 			        out.close();
                 }
+		        //rename .buf to normal
+	            if (!retireTmpFile(bufferedPath)) {
+	                logger.warn("Failed to rename file from \".buf\" to normal.");
+	                throw new IOException();
+	            }
 				if (in != null) {
 				    in.close();
                 }
+	            if (!deleteFile(tmpPath)) {
+	                logger.warn("Failed to delete old tmp file.");
+	            }
 			} catch (IOException e) {
 				logger.warn("Unable to close in and out stream for file: " + tmpName, e);
 			}

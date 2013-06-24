@@ -3,27 +3,42 @@ package com.dianping.duplicate;
 import static org.junit.Assert.*;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestFileWatcherRunnable {
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+    }
 
-	@Test
-	public void testFileWatcherRunnable() {
-		fail("Not yet implemented");
-	}
+    @Before
+    public void setUp() throws Exception {
+    }
 
-	@Test
-	public void testRun() {
-		fail("Not yet implemented");
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void testRun() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testDoLoad() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testGetFile() {
+        fail("Not yet implemented");
+    }
 
 }

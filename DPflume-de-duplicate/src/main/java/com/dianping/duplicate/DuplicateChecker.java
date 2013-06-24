@@ -53,7 +53,7 @@ public class DuplicateChecker implements Runnable {
 	public void run() {
 		try {
 			findUndone = false;	//某个目录由于各种原因导致本次执行无法处理
-			logger.info("Begin to process {} .", appPathStr);
+			logger.info("Begin to process {}.", appPathStr);
 			String startHourStr, currentHourStr;
 			
 			DateUtil dateUtil = DateUtil.getInstance();
@@ -108,7 +108,7 @@ public class DuplicateChecker implements Runnable {
 				}
 				
 				Path workingPath = dateUtil.getPathFromStr(workingHourStr, appPathStr);
-				
+				logger.info("Processing " + workingPath);
 				//WorkPath not exist, it maybe the newest direction or something exception.
 				if (!operater.checkPathExists(workingPath)) {
 				    logger.warn("Working path {} is not exist. Task end this time.", workingPath);
@@ -126,7 +126,7 @@ public class DuplicateChecker implements Runnable {
 				//判断当前目录正在接受或已经接受了来自所有数据来源机器的文件（同一个应用）
 				if(!checkAllSourceReceiving(workingPath)) {
 				    if (currentMin > Integer.parseInt(appContext.getString(
-				            BasicConfigurationConstants.ALARM_BEGIN_TIME))) {
+				            BasicConfigurationConstants.ALARM_BEGIN_TIME).trim())) {
 				        logger.error("Receive data from all source timeout");
                     }
 					findUndone = true;
@@ -326,11 +326,12 @@ public class DuplicateChecker implements Runnable {
 	public boolean checkCollectorsAvailable() {
 		URLConnection connection;
 		InputStream is = null;
-		String[] collectors = appContext.getString(BasicConfigurationConstants.COLLECTORS).split(" ");
-		if (collectors.length == 0) {
-		    logger.warn("Can't get collectors, please verify that configure file content is correct.");
-            return false;
+		if (null == appContext.getString(BasicConfigurationConstants.COLLECTORS)) {
+		    logger.warn("There are no collectors info in *.conf. " +
+		    		"Availability for collectors hasn't been checked in this task.");
+            return true;
         }
+		String[] collectors = appContext.getString(BasicConfigurationConstants.COLLECTORS).trim().split(" ");
 		for (String collector : collectors) {
 		    /* http://<hostname>:<port>/metrics */
 			String urlPath = "http://" + collector + "/metrics";

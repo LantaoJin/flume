@@ -43,13 +43,11 @@ public class DateUtil {
 	}
 	
 	public String getCurrentDateStr() {
-		Date curruent = calendar.getTime();
-		return formatForCount.format(curruent);
+		return formatForCount.format(new Date());
 	}
 	
 	public int getCurrentMin() {
-        Date current = calendar.getTime();
-        return Integer.parseInt(formatForAlarm.format(current));
+        return Integer.parseInt(formatForAlarm.format(new Date()));
     }
 	
 	public Path getPathFromStr(String str, String appPathStr) throws ParseException {
@@ -57,7 +55,7 @@ public class DateUtil {
 				formatForPath.format(formatForCount.parse(str)));
 	}
 
-	public int getDateInterval(String startDateStr, String endDateStr) throws ParseException {
+	public int getDateInterval(final String startDateStr,final String endDateStr) throws ParseException {
 		return (int)((formatForCount.parse(endDateStr).getTime() -
 				formatForCount.parse(startDateStr).getTime())/(60*60*1000));
 	}

@@ -33,7 +33,7 @@
   
   <property>
     <name>deduplicate.hadoop.principal</name>
-    <value>workcron@DIANPING.COM</value>
+    <value>hadoop@DIANPING.COM</value>
   </property>
   
   <property>
