@@ -344,7 +344,7 @@ public class DuplicateChecker implements Runnable {
 				connection.connect();
 			} catch (Exception e) {
 				logger.warn("Connecting to url {} fail, please check whether need to modify" +
-						" collectors info in configure file.");
+				        " collectors info in configure file.");
 				return false;
 			} finally {
 			    try {

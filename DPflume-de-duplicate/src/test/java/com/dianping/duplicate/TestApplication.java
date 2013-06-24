@@ -72,7 +72,7 @@ public class TestApplication {
                 while ((line = input.readLine()) != null) {  
                 // System.out.println(line);  
                 } 
-                logger.info(currentDayStr + "hdfs dir create successful.");
+                logger.info(currentDayStr + "/" + hours + " hdfs dir create successful.");
             }
         } catch (Exception e) {
             e.printStackTrace();

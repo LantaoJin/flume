@@ -141,9 +141,6 @@ public class Application {
     		DuplicateChecker checker = new DuplicateChecker(appPathStr, operater, appContext);
     		checkerThreadPool.scheduleWithFixedDelay(checker, 0, appContext.getLong(BasicConfigurationConstants.CHECK_PERIOD), TimeUnit.SECONDS);
 		}
-		while (true) {
-		    Thread.sleep(60000);
-		}
 	}
 	
 	public void loadConfig() {
