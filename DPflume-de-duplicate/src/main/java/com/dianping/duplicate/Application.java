@@ -129,15 +129,23 @@ public class Application {
                     BasicConfigurationConstants.COMMOM_CONFIG);
             return;
         }
-		
+
 		for (String appName : apps) {
 		    appContext = DDConfiguration.getConfigurationFor(appName);
 		    if (appName.equals(BasicConfigurationConstants.COMMOM_CONFIG)) {
                 continue;//Continue because that this case has been handled.
             }
-		    String appPathStr = appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH) + appName;
+		    if (appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH) == null) {
+	            logger.error("Failed to load parent HDFS path from *.conf");
+	            return;
+	        }
+		    String appPathStr;
+		    if (appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH).trim().endsWith("/")) {
+		        appPathStr = appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH).trim() + appName;
+            } else {
+                appPathStr = appContext.getString(BasicConfigurationConstants.PARENT_HDFS_PATH).trim() + "/"+ appName;
+            }
     		HDFSOperater operater = new HDFSOperater(hdfs, appPathStr);
-    		
     		DuplicateChecker checker = new DuplicateChecker(appPathStr, operater, appContext);
     		checkerThreadPool.scheduleWithFixedDelay(checker, 0, appContext.getLong(BasicConfigurationConstants.CHECK_PERIOD), TimeUnit.SECONDS);
 		}

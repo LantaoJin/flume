@@ -97,7 +97,7 @@ public class DuplicateChecker implements Runnable {
 			String workingHourStr = startHourStr;
 			
 			//注意i从0开始，且i<=时间差值
-			for (int i = 0; i <= intervalHours; i++) {
+			for (int i = 0; i < intervalHours; i++) {
                 workingHourStr = dateUtil.getWorkingHourStr(startHourStr, i);
 				
 				//一旦发现有未完成的，findUndone就变为true，此后除非线程重启，否则都无法再移动startHourStr指针
@@ -342,7 +342,7 @@ public class DuplicateChecker implements Runnable {
 		for (String collector : collectors) {
 		    /* http://<hostname>:<port>/metrics */
 			String urlPath = "http://" + collector + "/metrics";
-			logger.info("Connecting url {}.", urlPath);
+			logger.debug("Connecting url {}.", urlPath);
 			try {
 				URL url = new URL(urlPath);
 				connection = url.openConnection();
