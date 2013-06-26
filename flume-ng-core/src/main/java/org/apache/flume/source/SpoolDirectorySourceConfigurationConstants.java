@@ -44,4 +44,7 @@ public class SpoolDirectorySourceConfigurationConstants {
   /** Maximum length of line (in characters) in buffer between commits. */
   public static final String BUFFER_MAX_LINE_LENGTH = "bufferMaxLineLength";
   public static final int DEFAULT_BUFFER_MAX_LINE_LENGTH = 5000;
+  
+  public static final String WHITE_LIST = "whitelist";
+  public static final String DEFAULT_WHITE_LIST = "";
 }

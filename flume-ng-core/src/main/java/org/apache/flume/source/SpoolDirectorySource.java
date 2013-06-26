@@ -50,7 +50,7 @@ Configurable, EventDrivenSource {
   private String spoolDirectory;
   private boolean fileHeader;
   private String fileHeaderKey;
-  private String SPRTSKey;
+  public static String whitelist;
   private int batchSize;
   private int bufferMaxLines;
   private int bufferMaxLineLength;
@@ -101,6 +101,14 @@ Configurable, EventDrivenSource {
     fileHeaderKey = context.getString(
         SpoolDirectorySourceConfigurationConstants.FILENAME_HEADER_KEY,
         SpoolDirectorySourceConfigurationConstants.DEFAULT_FILENAME_HEADER_KEY);
+    whitelist = context.getString(
+        SpoolDirectorySourceConfigurationConstants.WHITE_LIST,
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_WHITE_LIST).trim();
+    if (whitelist.equals("")) {
+      logger.warn("White list of spool directory has been canceled.");
+    } else {
+      logger.info("Spool directory uses white list: " + whitelist);
+    }
     batchSize = context.getInteger(
         SpoolDirectorySourceConfigurationConstants.BATCH_SIZE,
         SpoolDirectorySourceConfigurationConstants.DEFAULT_BATCH_SIZE);

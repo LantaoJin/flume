@@ -35,6 +35,7 @@ import org.apache.flume.Channel;
 import org.apache.flume.ChannelSelector;
 import org.apache.flume.FlumeException;
 import org.apache.flume.channel.MemoryChannel;
+import org.apache.flume.source.SpoolDirectorySource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -346,7 +347,13 @@ public class SpoolingFileLineReader implements LineReader {
             (pathName.getName().startsWith("."))) {
           return false;
         }
-        return true;
+        if ((SpoolDirectorySource.whitelist.equals(""))) {
+          return true;
+        }
+        if (pathName.getName().startsWith(SpoolDirectorySource.whitelist)) {
+          return true;
+        }
+        return false;
       }
     };
     List<File> candidateFiles = Arrays.asList(directory.listFiles(filter));
