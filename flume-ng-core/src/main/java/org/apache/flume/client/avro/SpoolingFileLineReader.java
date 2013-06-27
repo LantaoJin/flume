@@ -225,19 +225,18 @@ public class SpoolingFileLineReader implements LineReader {
     List<String> out = Lists.newArrayList();
     while (outLine != null) {
       if (outLine.length() > bufferMaxLineLength) {
-        logger.warn("Found line longer than " + bufferMaxLineLength +
-            " characters.");
         int lastCharToPrint = Math.min(OVERFLOW_LINE_PRINT_CHARS,
             outLine.length());
-
         if (SpoolDirectorySource.lineOverflowDiscard) {
-          logger.warn("Discarded line starts with: " +
+          logger.warn("Found line longer than " + bufferMaxLineLength +
+              " characters. Discarded line starts with: " +
             outLine.substring(0, lastCharToPrint));
           outLine = currentFile.get().getReader().readLine();
           n--;
           continue;
         } else {
-          logger.warn("Truncate line starts with: " +
+          logger.warn("Found line longer than " + bufferMaxLineLength +
+              " characters. Truncate line starts with: " +
               outLine.substring(0, lastCharToPrint));
           outLine = outLine.substring(0, bufferMaxLineLength);
         }
