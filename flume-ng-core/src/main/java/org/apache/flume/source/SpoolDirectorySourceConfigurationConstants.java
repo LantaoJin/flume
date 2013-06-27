@@ -47,4 +47,7 @@ public class SpoolDirectorySourceConfigurationConstants {
   
   public static final String WHITE_LIST = "whitelist";
   public static final String DEFAULT_WHITE_LIST = "";
+
+  public static final String LINE_OVERFLOW_DISCARD = "lineOverflowDiscard";
+  public static final boolean DEFAULT_LINE_OVERFLOW_DISCARD = true;
 }

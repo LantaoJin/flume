@@ -50,10 +50,11 @@ Configurable, EventDrivenSource {
   private String spoolDirectory;
   private boolean fileHeader;
   private String fileHeaderKey;
-  public static String whitelist;
   private int batchSize;
   private int bufferMaxLines;
   private int bufferMaxLineLength;
+  public static String whitelist;
+  public static boolean lineOverflowDiscard;
 
   private ScheduledExecutorService executor;
   private CounterGroup counterGroup;
@@ -101,14 +102,6 @@ Configurable, EventDrivenSource {
     fileHeaderKey = context.getString(
         SpoolDirectorySourceConfigurationConstants.FILENAME_HEADER_KEY,
         SpoolDirectorySourceConfigurationConstants.DEFAULT_FILENAME_HEADER_KEY);
-    whitelist = context.getString(
-        SpoolDirectorySourceConfigurationConstants.WHITE_LIST,
-        SpoolDirectorySourceConfigurationConstants.DEFAULT_WHITE_LIST).trim();
-    if (whitelist.equals("")) {
-      logger.warn("White list of spool directory has been canceled.");
-    } else {
-      logger.info("Spool directory uses white list: " + whitelist);
-    }
     batchSize = context.getInteger(
         SpoolDirectorySourceConfigurationConstants.BATCH_SIZE,
         SpoolDirectorySourceConfigurationConstants.DEFAULT_BATCH_SIZE);
@@ -118,6 +111,17 @@ Configurable, EventDrivenSource {
     bufferMaxLineLength = context.getInteger(
         SpoolDirectorySourceConfigurationConstants.BUFFER_MAX_LINE_LENGTH,
         SpoolDirectorySourceConfigurationConstants.DEFAULT_BUFFER_MAX_LINE_LENGTH);
+    whitelist = context.getString(
+        SpoolDirectorySourceConfigurationConstants.WHITE_LIST,
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_WHITE_LIST).trim();
+    if (whitelist.equals("")) {
+      logger.warn("White list of spool directory has been canceled.");
+    } else {
+      logger.info("Spool directory uses white list: " + whitelist);
+    }
+    lineOverflowDiscard = context.getBoolean(
+        SpoolDirectorySourceConfigurationConstants.LINE_OVERFLOW_DISCARD,
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_LINE_OVERFLOW_DISCARD);
   }
 
   /*

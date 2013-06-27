@@ -72,7 +72,7 @@ public class SpoolingFileLineReader implements LineReader {
   private static final Logger logger = LoggerFactory
       .getLogger(SpoolingFileLineReader.class);
   /** When a line is too long, how many characters do we print to err log. **/
-  private static final int OVERFLOW_LINE_PRINT_CHARS = 30;
+  private static final int OVERFLOW_LINE_PRINT_CHARS = 100;
 
   private File directory;
   public String completedSuffix;
@@ -225,14 +225,22 @@ public class SpoolingFileLineReader implements LineReader {
     List<String> out = Lists.newArrayList();
     while (outLine != null) {
       if (outLine.length() > bufferMaxLineLength) {
-        logger.error("Found line longer than " + bufferMaxLineLength +
-            " characters, cannot make progress.");
+        logger.warn("Found line longer than " + bufferMaxLineLength +
+            " characters.");
         int lastCharToPrint = Math.min(OVERFLOW_LINE_PRINT_CHARS,
             outLine.length());
-        logger.error("Invalid line starts with: " +
-          outLine.substring(0, lastCharToPrint));
-        disabled = true;
-        throw new FlumeException("Encoutered line that was too long.");
+
+        if (SpoolDirectorySource.lineOverflowDiscard) {
+          logger.warn("Discarded line starts with: " +
+            outLine.substring(0, lastCharToPrint));
+          outLine = currentFile.get().getReader().readLine();
+          n--;
+          continue;
+        } else {
+          logger.warn("Truncate line starts with: " +
+              outLine.substring(0, lastCharToPrint));
+          outLine = outLine.substring(0, bufferMaxLineLength);
+        }
       }
       outLine = SPRTS + ":" + (++lineCount) + ":" + outLine;
       out.add(outLine);
