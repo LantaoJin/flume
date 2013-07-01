@@ -442,7 +442,7 @@ public class HDFSEventSink extends AbstractSink implements Configurable {
            * Firstly, remove the invalid bucketWriter from the flush list "writers".
            * Then, get a new one and put it to "sfWriters" and "writers". 
            * At last, invoke append() again. */
-          if (!writers.contains(bucketWriter)) {
+          if (writers.contains(bucketWriter)) {
             writers.remove(bucketWriter);
           }
 
