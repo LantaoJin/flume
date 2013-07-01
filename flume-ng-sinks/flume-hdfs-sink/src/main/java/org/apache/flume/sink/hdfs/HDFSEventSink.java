@@ -427,7 +427,50 @@ public class HDFSEventSink extends AbstractSink implements Configurable {
         }
 
         // Write the data to HDFS
-        append(bucketWriter, event);
+        try {
+          append(bucketWriter, event);
+        } catch (BucketWriterAlreadyCloseException e) {
+          LOG.warn("Append to the bucketWriter which already close", e);
+
+          /* A bucketWriter will close due to idle time and at the same time
+           * an event is appending. In this case, if getting a bucketWriter from "sfWriters"
+           * take place before removing (Which invoked in onIdleCallback()), it will throw
+           * an exception and the rollback operation will be execute.
+           * As this above, this rollback transaction will bring about data duplicate.
+           * So, to avoid this situation, we create a custom exception 
+           * "BucketWriterAlreadyCloseException" and catch it for follow handlings.
+           * Firstly, remove the invalid bucketWriter from the flush list "writers".
+           * Then, get a new one and put it to "sfWriters" and "writers". 
+           * At last, invoke append() again. */
+          if (!writers.contains(bucketWriter)) {
+            writers.remove(bucketWriter);
+          }
+
+          HDFSWriter hdfsWriter = writerFactory.getWriter(fileType);
+          FlumeFormatter formatter = HDFSFormatterFactory
+              .getFormatter(writeFormat);
+          WriterCallback idleCallback = null;
+          if(idleTimeout != 0) {
+            idleCallback = new WriterCallback() {
+              @Override
+              public void run(String bucketPath) {
+                sfWriters.remove(bucketPath);
+              }
+            };
+          }
+          bucketWriter = new BucketWriter(rollInterval, rollSize, rollCount,
+              batchSize, context, realPath, suffix, codeC, compType, hdfsWriter,
+              formatter, timedRollerPool, proxyTicket, sinkCounter, idleTimeout,
+              idleCallback);
+
+          sfWriters.put(realPath, bucketWriter);
+
+          if (!writers.contains(bucketWriter)) {
+            writers.add(bucketWriter);
+          }
+
+          append(bucketWriter, event);
+        }
       }
 
       if (txnEventCount == 0) {
@@ -722,7 +765,7 @@ public class HDFSEventSink extends AbstractSink implements Configurable {
    * Append to bucket writer with timeout enforced
    */
   private void append(final BucketWriter bucketWriter, final Event event)
-      throws IOException, InterruptedException {
+      throws BucketWriterAlreadyCloseException, IOException, InterruptedException {
 
     // Write the data to HDFS
     callWithTimeout(new Callable<Void>() {

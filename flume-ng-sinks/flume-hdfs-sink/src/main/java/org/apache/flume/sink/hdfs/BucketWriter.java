@@ -198,13 +198,13 @@ class BucketWriter {
         long counter = fileExtensionCounter.incrementAndGet();
         /* Just Spooling direction source contain key "line"
          * But on codec mode, our first version of java de-duplicate procedure temporarily cannot handle it.*/
-        LOG.debug("before add line {}", filePath);
+        String lineStr = "";
         if (event.getHeaders().containsKey("line") ) {
-          filePath += event.getHeaders().get("line");
+          lineStr = event.getHeaders().get("line");
+          LOG.trace("Add line {}", lineStr);
         }
-        LOG.debug("after add line {}", filePath);
         if (codeC == null) {
-          bucketPath = filePath + "." + counter;
+          bucketPath = filePath + lineStr + "." + counter;
           // FLUME-1645 - add suffix if specified
           if (fileSuffix != null && fileSuffix.length() > 0) {
             bucketPath += fileSuffix;
@@ -216,7 +216,7 @@ class BucketWriter {
           LOG.info("Creating " + bucketPath + IN_USE_EXT);
           writer.open(bucketPath + IN_USE_EXT, formatter);
         } else {
-          bucketPath = filePath + "." + counter
+          bucketPath = filePath + lineStr + "." + counter
               + codeC.getDefaultExtension();
           // need to get reference to FS before writer does to avoid shutdown hook
           fileSystem = new Path(bucketPath).getFileSystem(config);
@@ -363,10 +363,10 @@ class BucketWriter {
    * mechanism will never roll an empty file. This also ensures that the file
    * creation time reflects when the first event was written.
    */
-  public synchronized void append(Event event) throws IOException, InterruptedException {
+  public synchronized void append(Event event) throws BucketWriterAlreadyCloseException, IOException, InterruptedException {
     if (!isOpen) {
       if(idleClosed) {
-        throw new IOException("This bucket writer was closed due to idling and this handle " +
+        throw new BucketWriterAlreadyCloseException("This bucket writer was closed due to idling and this handle " +
             "is thus no longer valid");
       }
       open(event);
