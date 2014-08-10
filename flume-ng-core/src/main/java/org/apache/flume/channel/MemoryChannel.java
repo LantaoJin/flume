@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.apache.flume.ChannelException;
+import org.apache.flume.ChannelFullException;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.annotations.InterfaceAudience;
@@ -79,18 +80,11 @@ public class MemoryChannel extends BasicChannelSemantics {
       channelCounter.incrementEventPutAttemptCount();
       int eventByteSize = (int)Math.ceil(estimateEventSize(event)/byteCapacitySlotSize);
 
-      if (bytesRemaining.tryAcquire(eventByteSize, keepAlive, TimeUnit.SECONDS)) {
-        if(!putList.offer(event)) {
-          throw new ChannelException("Put queue for MemoryTransaction of capacity " +
-              putList.size() + " full, consider committing more frequently, " +
-              "increasing capacity or increasing thread count");
-        }
-      } else {
-        throw new ChannelException("Put queue for MemoryTransaction of byteCapacity " +
-            (lastByteCapacity * (int)byteCapacitySlotSize) + " bytes cannot add an " +
-            " event of size " + estimateEventSize(event) + " bytes because " +
-             (bytesRemaining.availablePermits() * (int)byteCapacitySlotSize) + " bytes are already used." +
-            " Try consider comitting more frequently, increasing byteCapacity or increasing thread count");
+      if (!putList.offer(event)) {
+        throw new ChannelException(
+          "Put queue for MemoryTransaction of capacity " +
+            putList.size() + " full, consider committing more frequently, " +
+            "increasing capacity or increasing thread count");
       }
       putByteCounter += eventByteSize;
     }
@@ -124,8 +118,16 @@ public class MemoryChannel extends BasicChannelSemantics {
     protected void doCommit() throws InterruptedException {
       int remainingChange = takeList.size() - putList.size();
       if(remainingChange < 0) {
+        if(!bytesRemaining.tryAcquire(putByteCounter, keepAlive,
+          TimeUnit.SECONDS)) {
+          throw new ChannelException("Cannot commit transaction. Heap space " +
+            "limit of " + byteCapacity + "reached. Please increase heap space" +
+            " allocated to the channel as the sinks may not be keeping up " +
+            "with the sources");
+        }
         if(!queueRemaining.tryAcquire(-remainingChange, keepAlive, TimeUnit.SECONDS)) {
-          throw new ChannelException("Space for commit to queue couldn't be acquired" +
+          bytesRemaining.release(putByteCounter);
+          throw new ChannelFullException("Space for commit to queue couldn't be acquired." +
               " Sinks are likely not keeping up with sources, or the buffer size is too tight");
         }
       }

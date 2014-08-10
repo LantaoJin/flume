@@ -46,13 +46,10 @@ public class ChannelConfiguration extends ComponentConfiguration {
      */
     JDBC("org.apache.flume.conf.channel.JdbcChannelConfiguration"),
 
-    //For now, I am leaving just basic validation for recoverable
-    //memory channel. This should be updated when proper config stubs are added.
     /**
-     * Recoverable Memory Channel
-     * @see org.apache.flume.channel.recoverable.memory.RecoverableMemoryChannel
+     * Spillable Memory channel
      */
-    RECOVERABLEMEMORY("org.apache.flume.conf.channel.RecoverableMemoryChannelConfiguration");
+    SPILLABLEMEMORY("org.apache.flume.conf.channel.SpillableMemoryChannelConfiguration");
 
     private String channelConfigurationType;
 

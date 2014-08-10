@@ -21,19 +21,26 @@ package org.apache.flume.channel.file;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import org.apache.commons.io.FileUtils;
+import org.apache.flume.annotations.InterfaceAudience;
+import org.apache.flume.annotations.InterfaceStability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xerial.snappy.SnappyInputStream;
+import org.xerial.snappy.SnappyOutputStream;
 
 import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Collections;
 import java.util.Set;
 
-class Serialization {
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
+public class Serialization {
   private Serialization() {}
 
   static final long SIZE_OF_INT = 4;
@@ -43,12 +50,13 @@ class Serialization {
   static final int VERSION_2 = 2;
   static final int VERSION_3 = 3;
 
-  static final String METADATA_FILENAME = ".meta";
-  static final String METADATA_TMP_FILENAME = ".tmp";
-  static final String OLD_METADATA_FILENAME = METADATA_FILENAME + ".old";
+  public static final String METADATA_FILENAME = ".meta";
+  public static final String METADATA_TMP_FILENAME = ".tmp";
+  public static final String OLD_METADATA_FILENAME = METADATA_FILENAME +
+    ".old";
 
-  // 64 K buffer to copy files.
-  private static final int FILE_COPY_BUFFER_SIZE = 64 * 1024;
+  // 64 K buffer to copy and compress files.
+  private static final int FILE_BUFFER_SIZE = 64 * 1024;
 
   public static final Logger LOG = LoggerFactory.getLogger(Serialization.class);
 
@@ -93,7 +101,7 @@ class Serialization {
       builder = new StringBuilder("Deleted the following files: ");
     }
     if(excludes == null) {
-      excludes = Collections.EMPTY_SET;
+      excludes = Collections.emptySet();
     }
     for (File file : files) {
       if(excludes.contains(file.getName())) {
@@ -121,7 +129,7 @@ class Serialization {
    * @param to Destination file - this file should not exist
    * @return true if the copy was successful
    */
-  static boolean copyFile(File from, File to) throws IOException {
+  public static boolean copyFile(File from, File to) throws IOException {
     Preconditions.checkNotNull(from, "Source file is null, file copy failed.");
     Preconditions.checkNotNull(to, "Destination file is null, " +
       "file copy failed.");
@@ -135,7 +143,7 @@ class Serialization {
     try {
       in = new BufferedInputStream(new FileInputStream(from));
       out = new RandomAccessFile(to, "rw");
-      byte[] buf = new byte[FILE_COPY_BUFFER_SIZE];
+      byte[] buf = new byte[FILE_BUFFER_SIZE];
       int total = 0;
       while(true) {
         int read = in.read(buf);
@@ -178,5 +186,142 @@ class Serialization {
     // Should never reach here.
     throw new IOException("Copying file: " + from.toString() + " to: " + to
       .toString() + " may have failed.");
+  }
+
+  /**
+   * Compress file using Snappy
+   * @param uncompressed File to compress - this file should exist
+   * @param compressed Compressed file - this file should not exist
+   * @return true if compression was successful
+   */
+  public static boolean compressFile(File uncompressed, File compressed)
+    throws IOException {
+    Preconditions.checkNotNull(uncompressed,
+      "Source file is null, compression failed.");
+    Preconditions.checkNotNull(compressed,
+      "Destination file is null, compression failed.");
+    Preconditions.checkState(uncompressed.exists(), "Source file: " +
+      uncompressed.toString() + " does not exist.");
+    Preconditions.checkState(!compressed.exists(),
+      "Compressed file: " + compressed.toString() + " unexpectedly " +
+        "exists.");
+
+    BufferedInputStream in = null;
+    FileOutputStream out = null;
+    SnappyOutputStream snappyOut = null;
+    try {
+      in = new BufferedInputStream(new FileInputStream(uncompressed));
+      out = new FileOutputStream(compressed);
+      snappyOut = new SnappyOutputStream(out);
+
+      byte[] buf = new byte[FILE_BUFFER_SIZE];
+      while(true) {
+        int read = in.read(buf);
+        if (read == -1) {
+          break;
+        }
+        snappyOut.write(buf, 0, read);
+      }
+      out.getFD().sync();
+      return true;
+    } catch (Exception ex) {
+      LOG.error("Error while attempting to compress " +
+        uncompressed.toString() + " to " + compressed.toString()
+        + ".", ex);
+      Throwables.propagate(ex);
+    } finally {
+      Throwable th = null;
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (Throwable ex) {
+        LOG.error("Error while closing input file.", ex);
+        th = ex;
+      }
+      try {
+        if (snappyOut != null) {
+          snappyOut.close();
+        }
+      } catch (IOException ex) {
+        LOG.error("Error while closing output file.", ex);
+        Throwables.propagate(ex);
+      }
+      if (th != null) {
+        Throwables.propagate(th);
+      }
+    }
+    // Should never reach here.
+    throw new IOException("Copying file: " + uncompressed.toString()
+      + " to: " + compressed.toString() + " may have failed.");
+  }
+
+  /**
+   * Decompress file using Snappy
+   * @param compressed File to compress - this file should exist
+   * @param decompressed Compressed file - this file should not exist
+   * @return true if decompression was successful
+   */
+  public static boolean decompressFile(File compressed, File decompressed)
+    throws IOException {
+    Preconditions.checkNotNull(compressed,
+      "Source file is null, decompression failed.");
+    Preconditions.checkNotNull(decompressed, "Destination file is " +
+      "null, decompression failed.");
+    Preconditions.checkState(compressed.exists(), "Source file: " +
+      compressed.toString() + " does not exist.");
+    Preconditions.checkState(!decompressed.exists(),
+      "Decompressed file: " + decompressed.toString() +
+        " unexpectedly exists.");
+
+    BufferedInputStream in = null;
+    SnappyInputStream snappyIn = null;
+    FileOutputStream out = null;
+    try {
+      in = new BufferedInputStream(new FileInputStream(compressed));
+      snappyIn = new SnappyInputStream(in);
+      out = new FileOutputStream(decompressed);
+
+      byte[] buf = new byte[FILE_BUFFER_SIZE];
+      while(true) {
+        int read = snappyIn.read(buf);
+        if (read == -1) {
+          break;
+        }
+        out.write(buf, 0, read);
+      }
+      out.getFD().sync();
+      return true;
+    } catch (Exception ex) {
+      LOG.error("Error while attempting to compress " +
+        compressed.toString() + " to " + decompressed.toString() +
+        ".", ex);
+      Throwables.propagate(ex);
+    } finally {
+      Throwable th = null;
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (Throwable ex) {
+        LOG.error("Error while closing input file.", ex);
+        th = ex;
+      }
+      try {
+        if (snappyIn != null) {
+          snappyIn.close();
+        }
+      } catch (IOException ex) {
+        LOG.error("Error while closing output file.", ex);
+        Throwables.propagate(ex);
+      }
+      if (th != null) {
+        Throwables.propagate(th);
+      }
+    }
+    // Should never reach here.
+    throw new IOException("Decompressing file: " +
+      compressed.toString() + " to: " + decompressed.toString() +
+      " may have failed.");
   }
 }

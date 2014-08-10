@@ -209,6 +209,7 @@ their respective licenses.
 
 
 For 
+ apache-log4j-extras-<version>.jar:
  avro-<version>.jar:
  avro-ipc-<version>.jar:
  commons-cli-<version>.jar:
@@ -216,31 +217,44 @@ For
  commons-collections-<version>.jar:
  commons-dbcp-<version>.jar:
  commons-io-<version>.jar:
+ commons-jexl-<version>.jar:
  commons-lang-<version>.jar:
  commons-logging-<version>.jar:
  commons-pool-<version>.jar:
  derby-<version>.jar:
  guava-<version>.jar:
- gson-<version>.jar
+ gson-<version>.jar:
  httpclient-<version>.jar:
  httpcore-<version>.jar:
  irclib-<version>.jar:
- jackson-core-asl-<version>.jar:
- jackson-mapper-asl-<version>.jar:
+ jackson-core-asl-1.<version>.jar:
+ jackson-mapper-asl-1.<version>.jar:
  jetty-<version>.jar:
  jetty-util-<version>.jar:
  joda-time-<version>.jar:
+ kite-data-core-<version>.jar 
  libthrift-<version>.jar:
  log4j-<version>.jar:
+ mapdb-<version>.jar:
  mina-core-<version>.jar:
  netty-<version>.jar:
+ opencsv-<version>.jar:
+ parquet-avro-<version>.jar:
+ parquet-column-<version>.jar:
+ parquet-common-<version>.jar:
+ parquet-encoding-<version>.jar:
+ parquet-format-<version>.jar:
+ parquet-generator-<version>.jar:
+ parquet-hadoop-<version>.jar:
  servlet-api-<version>.jar:
  snappy-java-<version>.jar:
+ twitter4j-core-<version>.jar:
+ twitter4j-media-support-<version>.jar
+ twitter4j-stream-<version>.jar
  velocity-<version>.jar:
  zookeeper-<version>.jar:
  
   The Apache License, Version 2.0
-
 
 For 
  async-<version>.jar:
@@ -408,7 +422,6 @@ For
   support library is itself covered by the above license.
 
 For 
- jcl-over-slf4j-<version>.jar:
  slf4j-api-<version>.jar:
  slf4j-log4j12-<version>.jar:
  
@@ -435,5 +448,3 @@ For
   LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
   OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  
- 

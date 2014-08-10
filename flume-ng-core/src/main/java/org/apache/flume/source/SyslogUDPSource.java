@@ -19,10 +19,12 @@
 package org.apache.flume.source;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.flume.ChannelException;
 import org.apache.flume.Context;
 import org.apache.flume.CounterGroup;
@@ -33,13 +35,7 @@ import org.apache.flume.conf.Configurables;
 import org.apache.flume.source.SyslogUtils;
 import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioDatagramChannelFactory;
 
 import org.slf4j.Logger;
@@ -53,16 +49,27 @@ public class SyslogUDPSource extends AbstractSource
   private String host = null;
   private Channel nettyChannel;
   private Map<String, String> formaterProp;
+  private boolean keepFields;
 
   private static final Logger logger = LoggerFactory
       .getLogger(SyslogUDPSource.class);
 
   private CounterGroup counterGroup = new CounterGroup();
+
+  // Default Min size
+  public static final int DEFAULT_MIN_SIZE = 2048;
+  public static final int DEFAULT_INITIAL_SIZE = DEFAULT_MIN_SIZE;
+
   public class syslogHandler extends SimpleChannelHandler {
-    private SyslogUtils syslogUtils = new SyslogUtils(true);
+    private SyslogUtils syslogUtils = new SyslogUtils(DEFAULT_INITIAL_SIZE,
+      SyslogSourceConfigurationConstants.DEFAULT_KEEP_FIELDS, true);
 
     public void setFormater(Map<String, String> prop) {
       syslogUtils.addFormats(prop);
+    }
+
+    public void setKeepFields(boolean keepFields) {
+      syslogUtils.setKeepFields(keepFields);
     }
 
     @Override
@@ -90,6 +97,10 @@ public class SyslogUDPSource extends AbstractSource
         (new OioDatagramChannelFactory(Executors.newCachedThreadPool()));
     final syslogHandler handler = new syslogHandler();
     handler.setFormater(formaterProp);
+    handler.setKeepFields(keepFields);
+    serverBootstrap.setOption("receiveBufferSizePredictorFactory",
+      new AdaptiveReceiveBufferSizePredictorFactory(DEFAULT_MIN_SIZE,
+        DEFAULT_INITIAL_SIZE, maxsize));
     serverBootstrap.setPipelineFactory(new ChannelPipelineFactory() {
       @Override
       public ChannelPipeline getPipeline() {
@@ -132,6 +143,17 @@ public class SyslogUDPSource extends AbstractSource
     host = context.getString(SyslogSourceConfigurationConstants.CONFIG_HOST);
     formaterProp = context.getSubProperties(
         SyslogSourceConfigurationConstants.CONFIG_FORMAT_PREFIX);
+    keepFields = context.getBoolean(SyslogSourceConfigurationConstants.CONFIG_KEEP_FIELDS,
+      SyslogSourceConfigurationConstants.DEFAULT_KEEP_FIELDS);
   }
 
+  @VisibleForTesting
+  public int getSourcePort() {
+    SocketAddress localAddress = nettyChannel.getLocalAddress();
+    if (localAddress instanceof InetSocketAddress) {
+      InetSocketAddress addr = (InetSocketAddress) localAddress;
+      return addr.getPort();
+    }
+    return 0;
+  }
 }

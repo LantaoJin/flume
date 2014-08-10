@@ -22,6 +22,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.flume.annotations.InterfaceAudience;
+import org.apache.flume.annotations.InterfaceStability;
 import org.apache.flume.channel.file.encryption.CipherProvider;
 import org.apache.flume.channel.file.encryption.KeyProvider;
 import org.apache.flume.tools.DirectMemoryUtils;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -38,9 +41,14 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-abstract class LogFile {
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
+public abstract class LogFile {
 
   private static final Logger LOG = LoggerFactory
       .getLogger(LogFile.class);
@@ -54,13 +62,21 @@ abstract class LogFile {
   private static final ByteBuffer FILL = DirectMemoryUtils.
       allocate(1024 * 1024); // preallocation, 1MB
 
-  protected static final byte OP_RECORD = Byte.MAX_VALUE;
-  protected static final byte OP_EOF = Byte.MIN_VALUE;
+  public static final byte OP_RECORD = Byte.MAX_VALUE;
+  public static final byte OP_NOOP = (Byte.MAX_VALUE + Byte.MIN_VALUE)/2;
+  public static final byte OP_EOF = Byte.MIN_VALUE;
 
   static {
     for (int i = 0; i < FILL.capacity(); i++) {
       FILL.put(OP_EOF);
     }
+  }
+
+  protected static void skipRecord(RandomAccessFile fileHandle,
+    int offset) throws IOException {
+    fileHandle.seek(offset);
+    int length = fileHandle.readInt();
+    fileHandle.skipBytes(length);
   }
 
   abstract static class MetaDataWriter {
@@ -153,11 +169,21 @@ abstract class LogFile {
     private final CipherProvider.Encryptor encryptor;
     private final CachedFSUsableSpace usableSpace;
     private volatile boolean open;
+    private long lastCommitPosition;
+    private long lastSyncPosition;
+
+    private final boolean fsyncPerTransaction;
+    private final int fsyncInterval;
+    private final ScheduledExecutorService syncExecutor;
+    private volatile boolean dirty = false;
+
+    // To ensure we can count the number of fsyncs.
+    private long syncCount;
 
 
     Writer(File file, int logFileID, long maxFileSize,
-        CipherProvider.Encryptor encryptor, long usableSpaceRefreshInterval)
-        throws IOException {
+        CipherProvider.Encryptor encryptor, long usableSpaceRefreshInterval,
+        boolean fsyncPerTransaction, int fsyncInterval) throws IOException {
       this.file = file;
       this.logFileID = logFileID;
       this.maxFileSize = Math.min(maxFileSize,
@@ -165,6 +191,25 @@ abstract class LogFile {
       this.encryptor = encryptor;
       writeFileHandle = new RandomAccessFile(file, "rw");
       writeFileChannel = writeFileHandle.getChannel();
+      this.fsyncPerTransaction = fsyncPerTransaction;
+      this.fsyncInterval = fsyncInterval;
+      if(!fsyncPerTransaction) {
+        LOG.info("Sync interval = " + fsyncInterval);
+        syncExecutor = Executors.newSingleThreadScheduledExecutor();
+        syncExecutor.scheduleWithFixedDelay(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              sync();
+            } catch (Throwable ex) {
+              LOG.error("Data file, " + getFile().toString() + " could not " +
+                "be synced to disk due to an error.", ex);
+            }
+          }
+        }, fsyncInterval, fsyncInterval, TimeUnit.SECONDS);
+      } else {
+        syncExecutor = null;
+      }
       usableSpace = new CachedFSUsableSpace(file, usableSpaceRefreshInterval);
       LOG.info("Opened " + file);
       open = true;
@@ -193,9 +238,28 @@ abstract class LogFile {
     long getMaxSize() {
       return maxFileSize;
     }
+
+    @VisibleForTesting
+    long getLastCommitPosition(){
+      return lastCommitPosition;
+    }
+
+    @VisibleForTesting
+    long getLastSyncPosition() {
+      return lastSyncPosition;
+    }
+
+    @VisibleForTesting
+    long getSyncCount() {
+      return syncCount;
+    }
     synchronized long position() throws IOException {
       return getFileChannel().position();
     }
+
+    // encrypt and write methods may not be thread safe in the following
+    // methods, so all methods need to be synchronized.
+
     synchronized FlumeEventPointer put(ByteBuffer buffer) throws IOException {
       if(encryptor != null) {
         buffer = ByteBuffer.wrap(encryptor.encrypt(buffer.array()));
@@ -215,14 +279,18 @@ abstract class LogFile {
       }
       write(buffer);
     }
+
     synchronized void commit(ByteBuffer buffer) throws IOException {
-      if(encryptor != null) {
+      if (encryptor != null) {
         buffer = ByteBuffer.wrap(encryptor.encrypt(buffer.array()));
       }
       write(buffer);
-      sync();
+      dirty = true;
+      lastCommitPosition = position();
     }
-    private Pair<Integer, Integer> write(ByteBuffer buffer) throws IOException {
+
+    private Pair<Integer, Integer> write(ByteBuffer buffer)
+      throws IOException {
       if(!isOpen()) {
         throw new LogFileRetryableIOException("File closed " + file);
       }
@@ -246,14 +314,36 @@ abstract class LogFile {
       Preconditions.checkState(wrote == toWrite.limit());
       return Pair.of(getLogFileID(), offset);
     }
+
     synchronized boolean isRollRequired(ByteBuffer buffer) throws IOException {
       return isOpen() && position() + (long) buffer.limit() > getMaxSize();
     }
-    private void sync() throws IOException {
-      if(!isOpen()) {
+
+    /**
+     * Sync the underlying log file to disk. Expensive call,
+     * should be used only on commits. If a sync has already happened after
+     * the last commit, this method is a no-op
+     * @throws IOException
+     * @throws LogFileRetryableIOException - if this log file is closed.
+     */
+    synchronized void sync() throws IOException {
+      if (!fsyncPerTransaction && !dirty) {
+        if(LOG.isDebugEnabled()) {
+          LOG.debug(
+            "No events written to file, " + getFile().toString() +
+              " in last " + fsyncInterval + " or since last commit.");
+        }
+        return;
+      }
+      if (!isOpen()) {
         throw new LogFileRetryableIOException("File closed " + file);
       }
-      getFileChannel().force(false);
+      if (lastSyncPosition < lastCommitPosition) {
+        getFileChannel().force(false);
+        lastSyncPosition = position();
+        syncCount++;
+        dirty = false;
+      }
     }
 
 
@@ -269,6 +359,13 @@ abstract class LogFile {
     synchronized void close() {
       if(open) {
         open = false;
+        if (!fsyncPerTransaction) {
+          // Shutdown the executor before attempting to close.
+          if(syncExecutor != null) {
+            // No need to wait for it to shutdown.
+            syncExecutor.shutdown();
+          }
+        }
         if(writeFileChannel.isOpen()) {
           LOG.info("Closing " + file);
           try {
@@ -296,22 +393,67 @@ abstract class LogFile {
     }
   }
 
+  /**
+   * This is an class meant to be an internal Flume API,
+   * and can change at any time. Intended to be used only from File Channel  Integrity
+   * test tool. Not to be used for any other purpose.
+   */
+  public static class OperationRecordUpdater {
+    private final RandomAccessFile fileHandle;
+    private final File file;
+
+    public OperationRecordUpdater(File file) throws FileNotFoundException {
+      Preconditions.checkState(file.exists(), "File to update, " +
+        file.toString() + " does not exist.");
+      this.file = file;
+      fileHandle = new RandomAccessFile(file, "rw");
+    }
+
+    public void markRecordAsNoop(long offset) throws IOException {
+      // First ensure that the offset actually is an OP_RECORD. There is a
+      // small possibility that it still is OP_RECORD,
+      // but is not actually the beginning of a record. Is there anything we
+      // can do about it?
+      fileHandle.seek(offset);
+      byte byteRead = fileHandle.readByte();
+      Preconditions.checkState(byteRead == OP_RECORD || byteRead == OP_NOOP,
+        "Expected to read a record but the byte read indicates EOF");
+      fileHandle.seek(offset);
+      LOG.info("Marking event as " + OP_NOOP + " at " + offset + " for file " +
+        file.toString());
+      fileHandle.writeByte(OP_NOOP);
+    }
+
+    public void close() {
+      try {
+        fileHandle.getFD().sync();
+        fileHandle.close();
+      } catch (IOException e) {
+        LOG.error("Could not close file handle to file " +
+          fileHandle.toString(), e);
+      }
+    }
+  }
+
   static abstract class RandomReader {
     private final File file;
     private final BlockingQueue<RandomAccessFile> readFileHandles =
         new ArrayBlockingQueue<RandomAccessFile>(50, true);
     private final KeyProvider encryptionKeyProvider;
+    private final boolean fsyncPerTransaction;
     private volatile boolean open;
-    public RandomReader(File file, @Nullable KeyProvider encryptionKeyProvider)
+    public RandomReader(File file, @Nullable KeyProvider
+      encryptionKeyProvider, boolean fsyncPerTransaction)
         throws IOException {
       this.file = file;
       this.encryptionKeyProvider = encryptionKeyProvider;
       readFileHandles.add(open());
+      this.fsyncPerTransaction = fsyncPerTransaction;
       open = true;
     }
 
     protected abstract TransactionEventRecord doGet(RandomAccessFile fileHandle)
-        throws IOException;
+        throws IOException, CorruptEventException;
 
     abstract int getVersion();
 
@@ -323,15 +465,23 @@ abstract class LogFile {
       return encryptionKeyProvider;
     }
 
-    FlumeEvent get(int offset) throws IOException, InterruptedException {
+    FlumeEvent get(int offset) throws IOException, InterruptedException,
+      CorruptEventException, NoopRecordException {
       Preconditions.checkState(open, "File closed");
       RandomAccessFile fileHandle = checkOut();
       boolean error = true;
       try {
         fileHandle.seek(offset);
         byte operation = fileHandle.readByte();
-        Preconditions.checkState(operation == OP_RECORD,
-            Integer.toHexString(operation));
+        if(operation == OP_NOOP) {
+          throw new NoopRecordException("No op record found. Corrupt record " +
+            "may have been repaired by File Channel Integrity tool");
+        }
+        if (operation != OP_RECORD) {
+          throw new CorruptEventException(
+            "Operation code is invalid. File " +
+              "is corrupt. Please run File Channel Integrity tool.");
+        }
         TransactionEventRecord record = doGet(fileHandle);
         if(!(record instanceof Put)) {
           Preconditions.checkState(false, "Record is " +
@@ -391,8 +541,8 @@ abstract class LogFile {
       }
       int remaining = readFileHandles.remainingCapacity();
       if(remaining > 0) {
-        LOG.info("Opening " + file + " for read, remaining capacity is "
-            + remaining);
+        LOG.info("Opening " + file + " for read, remaining number of file " +
+          "handles available for reads of this file is " + remaining);
         return open();
       }
       return readFileHandles.take();
@@ -408,7 +558,7 @@ abstract class LogFile {
     }
   }
 
-  static abstract class SequentialReader {
+  public static abstract class SequentialReader {
 
     private final RandomAccessFile fileHandle;
     private final FileChannel fileChannel;
@@ -434,7 +584,7 @@ abstract class LogFile {
       fileHandle = new RandomAccessFile(file, "r");
       fileChannel = fileHandle.getChannel();
     }
-    abstract LogRecord doNext(int offset) throws IOException;
+    abstract LogRecord doNext(int offset) throws IOException, CorruptEventException;
 
     abstract int getVersion();
 
@@ -488,7 +638,7 @@ abstract class LogFile {
       }
     }
 
-    LogRecord next() throws IOException {
+    public LogRecord next() throws IOException, CorruptEventException {
       int offset = -1;
       try {
         long position = fileChannel.position();
@@ -499,14 +649,26 @@ abstract class LogFile {
         }
         offset = (int) position;
         Preconditions.checkState(offset >= 0);
-        byte operation = fileHandle.readByte();
-        if(operation != OP_RECORD) {
-          if(operation == OP_EOF) {
+        while (offset < fileHandle.length()) {
+          byte operation = fileHandle.readByte();
+          if (operation == OP_RECORD) {
+            break;
+          } else if (operation == OP_EOF) {
             LOG.info("Encountered EOF at " + offset + " in " + file);
+            return null;
+          } else if (operation == OP_NOOP) {
+            LOG.info("No op event found in file: " + file.toString() +
+              " at " + offset + ". Skipping event.");
+            skipRecord(fileHandle, offset + 1);
+            offset = (int) fileHandle.getFilePointer();
+            continue;
           } else {
             LOG.error("Encountered non op-record at " + offset + " " +
-                Integer.toHexString(operation) + " in " + file);
+              Integer.toHexString(operation) + " in " + file);
+            return null;
           }
+        }
+        if(offset >= fileHandle.length()) {
           return null;
         }
         return doNext(offset);
@@ -518,7 +680,10 @@ abstract class LogFile {
       }
     }
 
-    void close() {
+    public long getPosition() throws IOException {
+      return fileChannel.position();
+    }
+    public void close() {
       if(fileHandle != null) {
         try {
           fileHandle.close();
@@ -532,19 +697,28 @@ abstract class LogFile {
     output.put(buffer);
   }
   protected static byte[] readDelimitedBuffer(RandomAccessFile fileHandle)
-      throws IOException {
+      throws IOException, CorruptEventException {
     int length = fileHandle.readInt();
-    Preconditions.checkState(length >= 0, Integer.toHexString(length));
+    if (length < 0) {
+      throw new CorruptEventException("Length of event is: " + String.valueOf
+        (length) + ". Event must have length >= 0. Possible corruption of " +
+        "data or partial fsync.");
+    }
     byte[] buffer = new byte[length];
-    fileHandle.readFully(buffer);
+    try {
+      fileHandle.readFully(buffer);
+    } catch (EOFException ex) {
+      throw new CorruptEventException("Remaining data in file less than " +
+        "expected size of event.", ex);
+    }
     return buffer;
   }
 
-  public static void main(String[] args) throws EOFException, IOException {
+  public static void main(String[] args) throws EOFException, IOException, CorruptEventException {
     File file = new File(args[0]);
     LogFile.SequentialReader reader = null;
     try {
-      reader = LogFileFactory.getSequentialReader(file, null);
+      reader = LogFileFactory.getSequentialReader(file, null, false);
       LogRecord entry;
       FlumeEventPointer ptr;
       // for puts the fileId is the fileID of the file they exist in

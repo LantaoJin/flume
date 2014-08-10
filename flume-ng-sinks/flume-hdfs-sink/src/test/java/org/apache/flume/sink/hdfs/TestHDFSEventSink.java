@@ -23,11 +23,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharsetDecoder;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Maps;
 import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
@@ -44,6 +47,7 @@ import org.apache.flume.SystemClock;
 import org.apache.flume.Transaction;
 import org.apache.flume.channel.MemoryChannel;
 import org.apache.flume.conf.Configurables;
+import org.apache.flume.event.EventBuilder;
 import org.apache.flume.event.SimpleEvent;
 import org.apache.flume.lifecycle.LifecycleException;
 import org.apache.hadoop.conf.Configuration;
@@ -74,6 +78,11 @@ public class TestHDFSEventSink {
   private String testPath;
   private static final Logger LOG = LoggerFactory
       .getLogger(HDFSEventSink.class);
+
+  static {
+    System.setProperty("java.security.krb5.realm", "flume");
+    System.setProperty("java.security.krb5.kdc", "blah");
+  }
 
   private void dirCleanup() {
     Configuration conf = new Configuration();
@@ -673,7 +682,7 @@ public class TestHDFSEventSink {
     int totalEvents = 0;
     int i = 1, j = 1;
 
-    HDFSBadWriterFactory badWriterFactory = new HDFSBadWriterFactory();
+    HDFSTestWriterFactory badWriterFactory = new HDFSTestWriterFactory();
     sink = new HDFSEventSink(badWriterFactory);
 
     // clear the test directory
@@ -689,7 +698,7 @@ public class TestHDFSEventSink {
     context.put("hdfs.filePrefix", fileName);
     context.put("hdfs.rollCount", String.valueOf(rollCount));
     context.put("hdfs.batchSize", String.valueOf(batchSize));
-    context.put("hdfs.fileType", HDFSBadWriterFactory.BadSequenceFileType);
+    context.put("hdfs.fileType", HDFSTestWriterFactory.TestSequenceFileType);
 
     Configurables.configure(sink, context);
 
@@ -840,7 +849,7 @@ public class TestHDFSEventSink {
    * This relies on Transactional rollback semantics for durability and
    * the behavior of the BucketWriter class of close()ing upon IOException.
    */
-  @Test
+ @Test
   public void testCloseReopen() throws InterruptedException,
       LifecycleException, EventDeliveryException, IOException {
 
@@ -852,7 +861,7 @@ public class TestHDFSEventSink {
     String newPath = testPath + "/singleBucket";
     int i = 1, j = 1;
 
-    HDFSBadWriterFactory badWriterFactory = new HDFSBadWriterFactory();
+    HDFSTestWriterFactory badWriterFactory = new HDFSTestWriterFactory();
     sink = new HDFSEventSink(badWriterFactory);
 
     // clear the test directory
@@ -868,7 +877,7 @@ public class TestHDFSEventSink {
     context.put("hdfs.filePrefix", fileName);
     context.put("hdfs.rollCount", String.valueOf(rollCount));
     context.put("hdfs.batchSize", String.valueOf(batchSize));
-    context.put("hdfs.fileType", HDFSBadWriterFactory.BadSequenceFileType);
+    context.put("hdfs.fileType", HDFSTestWriterFactory.TestSequenceFileType);
 
     Configurables.configure(sink, context);
 
@@ -910,6 +919,174 @@ public class TestHDFSEventSink {
     verifyOutputSequenceFiles(fs, conf, dirPath.toUri().getPath(), fileName, bodies);
   }
 
+  /**
+   * Test that the old bucket writer is closed at the end of rollInterval and
+   * a new one is used for the next set of events.
+   */
+  @Test
+  public void testCloseReopenOnRollTime() throws InterruptedException,
+    LifecycleException, EventDeliveryException, IOException {
+
+    LOG.debug("Starting...");
+    final int numBatches = 4;
+    final String fileName = "FlumeData";
+    final long batchSize = 2;
+    String newPath = testPath + "/singleBucket";
+    int i = 1, j = 1;
+
+    HDFSTestWriterFactory badWriterFactory = new HDFSTestWriterFactory();
+    sink = new HDFSEventSink(badWriterFactory);
+
+    // clear the test directory
+    Configuration conf = new Configuration();
+    FileSystem fs = FileSystem.get(conf);
+    Path dirPath = new Path(newPath);
+    fs.delete(dirPath, true);
+    fs.mkdirs(dirPath);
+
+    Context context = new Context();
+
+    context.put("hdfs.path", newPath);
+    context.put("hdfs.filePrefix", fileName);
+    context.put("hdfs.rollCount", String.valueOf(0));
+    context.put("hdfs.rollSize", String.valueOf(0));
+    context.put("hdfs.rollInterval", String.valueOf(2));
+    context.put("hdfs.batchSize", String.valueOf(batchSize));
+    context.put("hdfs.fileType", HDFSTestWriterFactory.TestSequenceFileType);
+
+    Configurables.configure(sink, context);
+
+    MemoryChannel channel = new MemoryChannel();
+    Configurables.configure(channel, new Context());
+
+    sink.setChannel(channel);
+    sink.start();
+
+    Calendar eventDate = Calendar.getInstance();
+    List<String> bodies = Lists.newArrayList();
+    // push the event batches into channel
+    for (i = 1; i < numBatches; i++) {
+      channel.getTransaction().begin();
+      try {
+        for (j = 1; j <= batchSize; j++) {
+          Event event = new SimpleEvent();
+          eventDate.clear();
+          eventDate.set(2011, i, i, i, 0); // yy mm dd
+          event.getHeaders().put("timestamp",
+            String.valueOf(eventDate.getTimeInMillis()));
+          event.getHeaders().put("hostname", "Host" + i);
+          String body = "Test." + i + "." + j;
+          event.setBody(body.getBytes());
+          bodies.add(body);
+          // inject fault
+          event.getHeaders().put("count-check", "");
+          channel.put(event);
+        }
+        channel.getTransaction().commit();
+      } finally {
+        channel.getTransaction().close();
+      }
+      LOG.info("execute sink to process the events: " + sink.process());
+      // Make sure the first file gets rolled due to rollTimeout.
+      if (i == 1) {
+        Thread.sleep(2001);
+      }
+    }
+    LOG.info("clear any events pending due to errors: " + sink.process());
+    sink.stop();
+
+    Assert.assertTrue(badWriterFactory.openCount.get() >= 2);
+    LOG.info("Total number of bucket writers opened: {}",
+      badWriterFactory.openCount.get());
+    verifyOutputSequenceFiles(fs, conf, dirPath.toUri().getPath(), fileName,
+      bodies);
+  }
+
+  /**
+   * Test that a close due to roll interval removes the bucketwriter from
+   * sfWriters map.
+   */
+  @Test
+  public void testCloseRemovesFromSFWriters() throws InterruptedException,
+    LifecycleException, EventDeliveryException, IOException {
+
+    LOG.debug("Starting...");
+    final String fileName = "FlumeData";
+    final long batchSize = 2;
+    String newPath = testPath + "/singleBucket";
+    int i = 1, j = 1;
+
+    HDFSTestWriterFactory badWriterFactory = new HDFSTestWriterFactory();
+    sink = new HDFSEventSink(badWriterFactory);
+
+    // clear the test directory
+    Configuration conf = new Configuration();
+    FileSystem fs = FileSystem.get(conf);
+    Path dirPath = new Path(newPath);
+    fs.delete(dirPath, true);
+    fs.mkdirs(dirPath);
+
+    Context context = new Context();
+
+    context.put("hdfs.path", newPath);
+    context.put("hdfs.filePrefix", fileName);
+    context.put("hdfs.rollCount", String.valueOf(0));
+    context.put("hdfs.rollSize", String.valueOf(0));
+    context.put("hdfs.rollInterval", String.valueOf(1));
+    context.put("hdfs.batchSize", String.valueOf(batchSize));
+    context.put("hdfs.fileType", HDFSTestWriterFactory.TestSequenceFileType);
+    String expectedLookupPath = newPath + "/FlumeData";
+
+    Configurables.configure(sink, context);
+
+    MemoryChannel channel = new MemoryChannel();
+    Configurables.configure(channel, new Context());
+
+    sink.setChannel(channel);
+    sink.start();
+
+    Calendar eventDate = Calendar.getInstance();
+    List<String> bodies = Lists.newArrayList();
+    // push the event batches into channel
+    channel.getTransaction().begin();
+    try {
+      for (j = 1; j <= 2 * batchSize; j++) {
+        Event event = new SimpleEvent();
+        eventDate.clear();
+        eventDate.set(2011, i, i, i, 0); // yy mm dd
+        event.getHeaders().put("timestamp",
+          String.valueOf(eventDate.getTimeInMillis()));
+        event.getHeaders().put("hostname", "Host" + i);
+        String body = "Test." + i + "." + j;
+        event.setBody(body.getBytes());
+        bodies.add(body);
+        // inject fault
+        event.getHeaders().put("count-check", "");
+        channel.put(event);
+      }
+      channel.getTransaction().commit();
+    } finally {
+      channel.getTransaction().close();
+    }
+    LOG.info("execute sink to process the events: " + sink.process());
+    Assert.assertTrue(sink.getSfWriters().containsKey(expectedLookupPath));
+    // Make sure the first file gets rolled due to rollTimeout.
+    Thread.sleep(2001);
+    Assert.assertFalse(sink.getSfWriters().containsKey(expectedLookupPath));
+    LOG.info("execute sink to process the events: " + sink.process());
+    // A new bucket writer should have been created for this bucket. So
+    // sfWriters map should not have the same key again.
+    Assert.assertTrue(sink.getSfWriters().containsKey(expectedLookupPath));
+    sink.stop();
+
+    LOG.info("Total number of bucket writers opened: {}",
+      badWriterFactory.openCount.get());
+    verifyOutputSequenceFiles(fs, conf, dirPath.toUri().getPath(), fileName,
+      bodies);
+  }
+
+
+
   /*
    * append using slow sink writer.
    * verify that the process returns backoff due to timeout
@@ -934,7 +1111,7 @@ public class TestHDFSEventSink {
     fs.mkdirs(dirPath);
 
     // create HDFS sink with slow writer
-    HDFSBadWriterFactory badWriterFactory = new HDFSBadWriterFactory();
+    HDFSTestWriterFactory badWriterFactory = new HDFSTestWriterFactory();
     sink = new HDFSEventSink(badWriterFactory);
 
     Context context = new Context();
@@ -942,7 +1119,7 @@ public class TestHDFSEventSink {
     context.put("hdfs.filePrefix", fileName);
     context.put("hdfs.rollCount", String.valueOf(rollCount));
     context.put("hdfs.batchSize", String.valueOf(batchSize));
-    context.put("hdfs.fileType", HDFSBadWriterFactory.BadSequenceFileType);
+    context.put("hdfs.fileType", HDFSTestWriterFactory.TestSequenceFileType);
     context.put("hdfs.callTimeout", Long.toString(1000));
     Configurables.configure(sink, context);
 
@@ -1004,7 +1181,7 @@ public class TestHDFSEventSink {
     fs.mkdirs(dirPath);
 
     // create HDFS sink with slow writer
-    HDFSBadWriterFactory badWriterFactory = new HDFSBadWriterFactory();
+    HDFSTestWriterFactory badWriterFactory = new HDFSTestWriterFactory();
     sink = new HDFSEventSink(badWriterFactory);
 
     Context context = new Context();
@@ -1012,7 +1189,7 @@ public class TestHDFSEventSink {
     context.put("hdfs.filePrefix", fileName);
     context.put("hdfs.rollCount", String.valueOf(rollCount));
     context.put("hdfs.batchSize", String.valueOf(batchSize));
-    context.put("hdfs.fileType", HDFSBadWriterFactory.BadSequenceFileType);
+    context.put("hdfs.fileType", HDFSTestWriterFactory.TestSequenceFileType);
     context.put("hdfs.appendTimeout", String.valueOf(appendTimeout));
     Configurables.configure(sink, context);
 
@@ -1127,10 +1304,10 @@ public class TestHDFSEventSink {
     sink.process();
     Thread.sleep(1001);
     // previous file should have timed out now
-    // this can throw an IOException(from the bucketWriter having idleClosed)
-    // this is not an issue as the sink will retry and get a fresh bucketWriter
-    // so long as the onIdleClose handler properly removes bucket writers that
-    // were closed due to idling
+    // this can throw BucketClosedException(from the bucketWriter having
+    // closed),this is not an issue as the sink will retry and get a fresh
+    // bucketWriter so long as the onClose handler properly removes
+    // bucket writers that were closed.
     sink.process();
     sink.process();
     Thread.sleep(500); // shouldn't be enough for a timeout to occur
@@ -1144,5 +1321,128 @@ public class TestHDFSEventSink {
     Assert.assertTrue(!fList[0].getName().endsWith(".tmp") &&
       !fList[1].getName().endsWith(".tmp"));
     fs.close();
+  }
+
+  private Context getContextForRetryTests() {
+    Context context = new Context();
+
+    context.put("hdfs.path", testPath + "/%{retryHeader}");
+    context.put("hdfs.filePrefix", "test");
+    context.put("hdfs.batchSize", String.valueOf(100));
+    context.put("hdfs.fileType", "DataStream");
+    context.put("hdfs.serializer", "text");
+    context.put("hdfs.closeTries","3");
+    context.put("hdfs.rollCount", "1");
+    context.put("hdfs.retryInterval", "1");
+    return context;
+  }
+
+  @Test
+  public void testBadConfigurationForRetryIntervalZero() throws
+    Exception {
+    Context context = getContextForRetryTests();
+    context.put("hdfs.retryInterval", "0");
+
+    Configurables.configure(sink, context);
+    Assert.assertEquals(1, sink.getTryCount());
+  }
+
+  @Test
+  public void testBadConfigurationForRetryIntervalNegative() throws
+    Exception {
+    Context context = getContextForRetryTests();
+    context.put("hdfs.retryInterval", "-1");
+
+    Configurables.configure(sink, context);
+    Assert.assertEquals(1, sink.getTryCount());
+  }
+  @Test
+  public void testBadConfigurationForRetryCountZero() throws
+    Exception {
+    Context context = getContextForRetryTests();
+    context.put("hdfs.closeTries" ,"0");
+
+    Configurables.configure(sink, context);
+    Assert.assertEquals(Integer.MAX_VALUE, sink.getTryCount());
+  }
+  @Test
+  public void testBadConfigurationForRetryCountNegative() throws
+    Exception {
+    Context context = getContextForRetryTests();
+    context.put("hdfs.closeTries" ,"-4");
+
+    Configurables.configure(sink, context);
+    Assert.assertEquals(Integer.MAX_VALUE, sink.getTryCount());
+  }
+  @Test
+  public void testRetryClose() throws InterruptedException,
+    LifecycleException,
+    EventDeliveryException, IOException {
+
+    LOG.debug("Starting...");
+    String newPath = testPath + "/retryBucket";
+
+    // clear the test directory
+    Configuration conf = new Configuration();
+    FileSystem fs = FileSystem.get(conf);
+    Path dirPath = new Path(newPath);
+    fs.delete(dirPath, true);
+    fs.mkdirs(dirPath);
+    MockFileSystem mockFs = new MockFileSystem(fs, 3);
+
+    Context context = getContextForRetryTests();
+    Configurables.configure(sink, context);
+
+    Channel channel = new MemoryChannel();
+    Configurables.configure(channel, context);
+
+    sink.setChannel(channel);
+    sink.setMockFs(mockFs);
+    HDFSWriter hdfsWriter = new MockDataStream(mockFs);
+    hdfsWriter.configure(context);
+    sink.setMockWriter(hdfsWriter);
+    sink.start();
+
+    // push the event batches into channel
+    for (int i = 0; i < 2; i++) {
+      Transaction txn = channel.getTransaction();
+      txn.begin();
+      Map<String, String> hdr = Maps.newHashMap();
+      hdr.put("retryHeader", "v1");
+
+      channel.put(EventBuilder.withBody("random".getBytes(), hdr));
+      txn.commit();
+      txn.close();
+
+      // execute sink to process the events
+      sink.process();
+    }
+    // push the event batches into channel
+    for (int i = 0; i < 2; i++) {
+      Transaction txn = channel.getTransaction();
+      txn.begin();
+      Map<String, String> hdr = Maps.newHashMap();
+      hdr.put("retryHeader", "v2");
+      channel.put(EventBuilder.withBody("random".getBytes(), hdr));
+      txn.commit();
+      txn.close();
+      // execute sink to process the events
+      sink.process();
+    }
+
+    TimeUnit.SECONDS.sleep(5); //Sleep till all retries are done.
+
+    Collection<BucketWriter> writers = sink.getSfWriters().values();
+
+    int totalCloseAttempts = 0;
+    for(BucketWriter writer: writers) {
+      LOG.info("Close tries = "+ writer.closeTries.get());
+      totalCloseAttempts += writer.closeTries.get();
+    }
+    // stop clears the sfWriters map, so we need to compute the
+    // close tries count before stopping the sink.
+    sink.stop();
+    Assert.assertEquals(6, totalCloseAttempts);
+
   }
 }

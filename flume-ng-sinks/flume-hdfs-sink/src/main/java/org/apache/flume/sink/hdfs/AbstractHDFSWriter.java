@@ -44,6 +44,8 @@ public abstract class AbstractHDFSWriter implements HDFSWriter {
   private Method refGetNumCurrentReplicas = null;
   private Method refGetDefaultReplication = null;
   private Integer configuredMinReplicas = null;
+  private Integer numberOfCloseRetries = null;
+  private long timeBetweenCloseRetries = Long.MAX_VALUE;
 
   final static Object [] NO_ARGS = new Object []{};
 
@@ -54,6 +56,17 @@ public abstract class AbstractHDFSWriter implements HDFSWriter {
       Preconditions.checkArgument(configuredMinReplicas >= 0,
           "hdfs.minBlockReplicas must be greater than or equal to 0");
     }
+    numberOfCloseRetries = context.getInteger("hdfs.closeTries", 1) - 1;
+
+    if (numberOfCloseRetries > 1) {
+      try {
+        timeBetweenCloseRetries = context.getLong("hdfs.callTimeout", 10000l);
+      } catch (NumberFormatException e) {
+        logger.warn("hdfs.callTimeout can not be parsed to a long: " + context.getLong("hdfs.callTimeout"));
+      }
+      timeBetweenCloseRetries = Math.max(timeBetweenCloseRetries/numberOfCloseRetries, 1000);
+    }
+
   }
 
   /**
@@ -97,6 +110,7 @@ public abstract class AbstractHDFSWriter implements HDFSWriter {
     this.destPath = destPath;
     this.refGetNumCurrentReplicas = reflectGetNumCurrentReplicas(outputStream);
     this.refGetDefaultReplication = reflectGetDefaultReplication(fs);
+
   }
 
   protected void unregisterCurrentStream() {
@@ -211,5 +225,4 @@ public abstract class AbstractHDFSWriter implements HDFSWriter {
     }
     return m;
   }
-
 }

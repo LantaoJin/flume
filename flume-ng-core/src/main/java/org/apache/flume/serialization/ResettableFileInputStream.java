@@ -21,6 +21,8 @@ package org.apache.flume.serialization;
 import com.google.common.base.Charsets;
 import org.apache.flume.annotations.InterfaceAudience;
 import org.apache.flume.annotations.InterfaceStability;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +34,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 
 /**
  * <p/>This class makes the following assumptions:
@@ -44,7 +47,10 @@ import java.nio.charset.CoderResult;
  */
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
-public class ResettableFileInputStream extends ResettableInputStream {
+public class ResettableFileInputStream extends ResettableInputStream
+    implements RemoteMarkable, LengthMeasurable {
+
+  Logger logger = LoggerFactory.getLogger(ResettableFileInputStream.class);
 
   public static final int DEFAULT_BUF_SIZE = 16384;
 
@@ -59,6 +65,7 @@ public class ResettableFileInputStream extends ResettableInputStream {
   private final CharsetDecoder decoder;
   private long position;
   private long syncPosition;
+  private int maxCharWidth;
 
   /**
    *
@@ -72,7 +79,7 @@ public class ResettableFileInputStream extends ResettableInputStream {
    */
   public ResettableFileInputStream(File file, PositionTracker tracker)
       throws IOException {
-    this(file, tracker, DEFAULT_BUF_SIZE, Charsets.UTF_8);
+    this(file, tracker, DEFAULT_BUF_SIZE, Charsets.UTF_8, DecodeErrorPolicy.FAIL);
   }
 
   /**
@@ -92,7 +99,7 @@ public class ResettableFileInputStream extends ResettableInputStream {
    * @throws FileNotFoundException
    */
   public ResettableFileInputStream(File file, PositionTracker tracker,
-                                   int bufSize, Charset charset)
+      int bufSize, Charset charset, DecodeErrorPolicy decodeErrorPolicy)
       throws IOException {
     this.file = file;
     this.tracker = tracker;
@@ -107,6 +114,25 @@ public class ResettableFileInputStream extends ResettableInputStream {
     this.decoder = charset.newDecoder();
     this.position = 0;
     this.syncPosition = 0;
+    this.maxCharWidth = (int)Math.ceil(charset.newEncoder().maxBytesPerChar());
+
+    CodingErrorAction errorAction;
+    switch (decodeErrorPolicy) {
+      case FAIL:
+        errorAction = CodingErrorAction.REPORT;
+        break;
+      case REPLACE:
+        errorAction = CodingErrorAction.REPLACE;
+        break;
+      case IGNORE:
+        errorAction = CodingErrorAction.IGNORE;
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Unexpected value for decode error policy: " + decodeErrorPolicy);
+    }
+    decoder.onMalformedInput(errorAction);
+    decoder.onUnmappableCharacter(errorAction);
 
     seek(tracker.getPosition());
   }
@@ -126,6 +152,8 @@ public class ResettableFileInputStream extends ResettableInputStream {
 
   @Override
   public synchronized int read(byte[] b, int off, int len) throws IOException {
+    logger.trace("read(buf, {}, {})", off, len);
+
     if (position >= fileSize) {
       return -1;
     }
@@ -145,7 +173,12 @@ public class ResettableFileInputStream extends ResettableInputStream {
 
   @Override
   public synchronized int readChar() throws IOException {
-    if (!buf.hasRemaining()) {
+    // The decoder can have issues with multi-byte characters.
+    // This check ensures that there are at least maxCharWidth bytes in the buffer
+    // before reaching EOF.
+    if (buf.remaining() < maxCharWidth) {
+      buf.clear();
+      buf.flip();
       refillBuf();
     }
 
@@ -194,17 +227,35 @@ public class ResettableFileInputStream extends ResettableInputStream {
   }
 
   @Override
+  public void markPosition(long position) throws IOException {
+    tracker.storePosition(position);
+  }
+
+  @Override
+  public long getMarkPosition() throws IOException {
+    return tracker.getPosition();
+  }
+
+  @Override
   public void reset() throws IOException {
     seek(tracker.getPosition());
   }
 
   @Override
+  public long length() throws IOException {
+    return file.length();
+  }
+
+  @Override
   public long tell() throws IOException {
+    logger.trace("Tell position: {}", syncPosition);
+
     return syncPosition;
   }
 
   @Override
   public synchronized void seek(long newPos) throws IOException {
+    logger.trace("Seek to position: {}", newPos);
 
     // check to see if we can seek within our existing buffer
     long relativeChange = newPos - position;

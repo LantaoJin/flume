@@ -56,6 +56,8 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
   protected static final int CHECKPOINT_COMPLETE = 0;
   protected static final int CHECKPOINT_INCOMPLETE = 1;
 
+  protected static final String COMPRESSED_FILE_EXTENSION = ".snappy";
+
   protected LongBuffer elementsBuffer;
   protected final Map<Integer, Long> overwriteMap = new HashMap<Integer, Long>();
   protected final Map<Integer, AtomicInteger> logFileIDReferenceCounts = Maps.newHashMap();
@@ -64,22 +66,24 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
   protected final File checkpointFile;
   private final Semaphore backupCompletedSema = new Semaphore(1);
   protected final boolean shouldBackup;
+  protected final boolean compressBackup;
   private final File backupDir;
   private final ExecutorService checkpointBackUpExecutor;
 
   protected EventQueueBackingStoreFile(int capacity, String name,
       File checkpointFile) throws IOException,
       BadCheckpointException {
-    this(capacity, name, checkpointFile, null, false);
+    this(capacity, name, checkpointFile, null, false, false);
   }
 
   protected EventQueueBackingStoreFile(int capacity, String name,
       File checkpointFile, File checkpointBackupDir,
-      boolean backupCheckpoint) throws IOException,
-      BadCheckpointException {
+      boolean backupCheckpoint, boolean compressBackup)
+    throws IOException, BadCheckpointException {
     super(capacity, name);
     this.checkpointFile = checkpointFile;
     this.shouldBackup = backupCheckpoint;
+    this.compressBackup = compressBackup;
     this.backupDir = checkpointBackupDir;
     checkpointFileHandle = new RandomAccessFile(checkpointFile, "rw");
     long totalBytes = (capacity + HEADER_SIZE) * Serialization.SIZE_OF_LONG;
@@ -166,11 +170,16 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
       "from the checkpoint directory. Cannot complete backup of the " +
       "checkpoint.");
     for (File origFile : checkpointFiles) {
-      if(origFile.getName().equals(Log.FILE_LOCK)) {
+      if(Log.EXCLUDES.contains(origFile.getName())) {
         continue;
       }
-      Serialization.copyFile(origFile, new File(backupDirectory,
-        origFile.getName()));
+      if (compressBackup && origFile.equals(checkpointFile)) {
+        Serialization.compressFile(origFile, new File(backupDirectory,
+          origFile.getName() + COMPRESSED_FILE_EXTENSION));
+      } else {
+        Serialization.copyFile(origFile, new File(backupDirectory,
+          origFile.getName()));
+      }
     }
     Preconditions.checkState(!backupFile.exists(), "The backup file exists " +
       "while it is not supposed to. Are multiple channels configured to use " +
@@ -202,7 +211,14 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
         String fileName = backupFile.getName();
         if (!fileName.equals(BACKUP_COMPLETE_FILENAME) &&
           !fileName.equals(Log.FILE_LOCK)) {
-          Serialization.copyFile(backupFile, new File(checkpointDir, fileName));
+          if (fileName.endsWith(COMPRESSED_FILE_EXTENSION)){
+            Serialization.decompressFile(
+              backupFile, new File(checkpointDir,
+              fileName.substring(0, fileName.lastIndexOf("."))));
+          } else {
+            Serialization.copyFile(backupFile, new File(checkpointDir,
+              fileName));
+          }
         }
       }
       return true;
@@ -300,6 +316,18 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
       checkpointFileHandle.close();
     } catch (IOException e) {
       LOG.info("Error closing " + checkpointFile, e);
+    }
+    if(checkpointBackUpExecutor != null && !checkpointBackUpExecutor
+      .isShutdown()) {
+      checkpointBackUpExecutor.shutdown();
+      try {
+        // Wait till the executor dies.
+        while (!checkpointBackUpExecutor.awaitTermination(1,
+          TimeUnit.SECONDS));
+      } catch (InterruptedException ex) {
+        LOG.warn("Interrupted while waiting for checkpoint backup to " +
+          "complete");
+      }
     }
   }
 
@@ -399,6 +427,7 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
     File file = new File(args[0]);
     File inflightTakesFile = new File(args[1]);
     File inflightPutsFile = new File(args[2]);
+    File queueSetDir = new File(args[3]);
     if (!file.exists()) {
       throw new IOException("File " + file + " does not exist");
     }
@@ -421,7 +450,8 @@ abstract class EventQueueBackingStoreFile extends EventQueueBackingStore {
               + fileID + ", offset = " + offset);
     }
     FlumeEventQueue queue =
-        new FlumeEventQueue(backingStore, inflightTakesFile, inflightPutsFile);
+        new FlumeEventQueue(backingStore, inflightTakesFile, inflightPutsFile,
+            queueSetDir);
     SetMultimap<Long, Long> putMap = queue.deserializeInflightPuts();
     System.out.println("Inflight Puts:");
 

@@ -29,8 +29,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.flume.annotations.InterfaceAudience;
+import org.apache.flume.annotations.InterfaceStability;
 import org.apache.flume.channel.file.proto.ProtosFactory;
-import org.apache.hadoop.io.Writable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,9 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Base class for records in data file: Put, Take, Rollback, Commit
  */
-abstract class TransactionEventRecord implements Writable {
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
+public abstract class TransactionEventRecord implements Writable {
   private static final Logger LOG = LoggerFactory
       .getLogger(TransactionEventRecord.class);
   private final long transactionID;
@@ -63,7 +67,7 @@ abstract class TransactionEventRecord implements Writable {
 
   abstract void writeProtos(OutputStream out) throws IOException;
 
-  abstract void readProtos(InputStream in) throws IOException;
+  abstract void readProtos(InputStream in) throws IOException, CorruptEventException;
 
   long getLogWriteOrderID() {
     return logWriteOrderID;
@@ -187,7 +191,7 @@ abstract class TransactionEventRecord implements Writable {
 
 
   static TransactionEventRecord fromByteArray(byte[] buffer)
-      throws IOException {
+      throws IOException, CorruptEventException {
     ByteArrayInputStream in = new ByteArrayInputStream(buffer);
     try {
       ProtosFactory.TransactionEventHeader header = Preconditions.
@@ -204,6 +208,9 @@ abstract class TransactionEventRecord implements Writable {
           ProtosFactory.TransactionEventFooter.
           parseDelimitedFrom(in), "Footer cannot be null");
       return transactionEvent;
+    } catch (InvalidProtocolBufferException ex) {
+      throw new CorruptEventException(
+        "Could not parse event from data file.", ex);
     } finally {
       try {
         in.close();

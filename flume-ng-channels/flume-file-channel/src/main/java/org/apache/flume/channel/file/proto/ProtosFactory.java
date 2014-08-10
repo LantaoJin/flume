@@ -30,39 +30,82 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required sfixed32 version = 1;
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     boolean hasVersion();
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     int getVersion();
 
     // required sfixed64 writeOrderID = 2;
+    /**
+     * <code>required sfixed64 writeOrderID = 2;</code>
+     */
     boolean hasWriteOrderID();
+    /**
+     * <code>required sfixed64 writeOrderID = 2;</code>
+     */
     long getWriteOrderID();
 
     // required sfixed32 queueSize = 3;
+    /**
+     * <code>required sfixed32 queueSize = 3;</code>
+     */
     boolean hasQueueSize();
+    /**
+     * <code>required sfixed32 queueSize = 3;</code>
+     */
     int getQueueSize();
 
     // required sfixed32 queueHead = 4;
+    /**
+     * <code>required sfixed32 queueHead = 4;</code>
+     */
     boolean hasQueueHead();
+    /**
+     * <code>required sfixed32 queueHead = 4;</code>
+     */
     int getQueueHead();
 
     // repeated .ActiveLog activeLogs = 5;
-    java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog>
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
+    java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog> 
         getActiveLogsList();
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog getActiveLogs(int index);
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     int getActiveLogsCount();
-    java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder>
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
+    java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder> 
         getActiveLogsOrBuilderList();
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder getActiveLogsOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code Checkpoint}
+   */
   public static final class Checkpoint extends
       com.google.protobuf.GeneratedMessage
       implements CheckpointOrBuilder {
     // Use Checkpoint.newBuilder() to construct.
-    private Checkpoint(Builder builder) {
+    private Checkpoint(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Checkpoint(boolean noInit) {}
+    private Checkpoint(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final Checkpoint defaultInstance;
     public static Checkpoint getDefaultInstance() {
@@ -73,6 +116,78 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Checkpoint(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+              bitField0_ |= 0x00000001;
+              version_ = input.readSFixed32();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              writeOrderID_ = input.readSFixed64();
+              break;
+            }
+            case 29: {
+              bitField0_ |= 0x00000004;
+              queueSize_ = input.readSFixed32();
+              break;
+            }
+            case 37: {
+              bitField0_ |= 0x00000008;
+              queueHead_ = input.readSFixed32();
+              break;
+            }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                activeLogs_ = new java.util.ArrayList<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              activeLogs_.add(input.readMessage(org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          activeLogs_ = java.util.Collections.unmodifiableList(activeLogs_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Checkpoint_descriptor;
@@ -80,16 +195,39 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Checkpoint_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Checkpoint_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.class, org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Checkpoint> PARSER =
+        new com.google.protobuf.AbstractParser<Checkpoint>() {
+      public Checkpoint parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Checkpoint(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Checkpoint> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required sfixed32 version = 1;
     public static final int VERSION_FIELD_NUMBER = 1;
     private int version_;
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     public boolean hasVersion() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     public int getVersion() {
       return version_;
     }
@@ -97,9 +235,15 @@ public final class ProtosFactory {
     // required sfixed64 writeOrderID = 2;
     public static final int WRITEORDERID_FIELD_NUMBER = 2;
     private long writeOrderID_;
+    /**
+     * <code>required sfixed64 writeOrderID = 2;</code>
+     */
     public boolean hasWriteOrderID() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required sfixed64 writeOrderID = 2;</code>
+     */
     public long getWriteOrderID() {
       return writeOrderID_;
     }
@@ -107,9 +251,15 @@ public final class ProtosFactory {
     // required sfixed32 queueSize = 3;
     public static final int QUEUESIZE_FIELD_NUMBER = 3;
     private int queueSize_;
+    /**
+     * <code>required sfixed32 queueSize = 3;</code>
+     */
     public boolean hasQueueSize() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
+    /**
+     * <code>required sfixed32 queueSize = 3;</code>
+     */
     public int getQueueSize() {
       return queueSize_;
     }
@@ -117,9 +267,15 @@ public final class ProtosFactory {
     // required sfixed32 queueHead = 4;
     public static final int QUEUEHEAD_FIELD_NUMBER = 4;
     private int queueHead_;
+    /**
+     * <code>required sfixed32 queueHead = 4;</code>
+     */
     public boolean hasQueueHead() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
+    /**
+     * <code>required sfixed32 queueHead = 4;</code>
+     */
     public int getQueueHead() {
       return queueHead_;
     }
@@ -127,19 +283,34 @@ public final class ProtosFactory {
     // repeated .ActiveLog activeLogs = 5;
     public static final int ACTIVELOGS_FIELD_NUMBER = 5;
     private java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog> activeLogs_;
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog> getActiveLogsList() {
       return activeLogs_;
     }
-    public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder>
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
+    public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder> 
         getActiveLogsOrBuilderList() {
       return activeLogs_;
     }
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     public int getActiveLogsCount() {
       return activeLogs_.size();
     }
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog getActiveLogs(int index) {
       return activeLogs_.get(index);
     }
+    /**
+     * <code>repeated .ActiveLog activeLogs = 5;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder getActiveLogsOrBuilder(
         int index) {
       return activeLogs_.get(index);
@@ -245,68 +416,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -322,6 +479,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code Checkpoint}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.CheckpointOrBuilder {
@@ -332,7 +492,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Checkpoint_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Checkpoint_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.class, org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.newBuilder()
@@ -340,7 +502,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -378,7 +541,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Checkpoint_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint getDefaultInstanceForType() {
@@ -389,16 +552,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -478,7 +631,7 @@ public final class ProtosFactory {
               activeLogsBuilder_ = null;
               activeLogs_ = other.activeLogs_;
               bitField0_ = (bitField0_ & ~0x00000010);
-              activeLogsBuilder_ =
+              activeLogsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getActiveLogsFieldBuilder() : null;
             } else {
@@ -492,24 +645,24 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasVersion()) {
-
+          
           return false;
         }
         if (!hasWriteOrderID()) {
-
+          
           return false;
         }
         if (!hasQueueSize()) {
-
+          
           return false;
         }
         if (!hasQueueHead()) {
-
+          
           return false;
         }
         for (int i = 0; i < getActiveLogsCount(); i++) {
           if (!getActiveLogs(i).isInitialized()) {
-
+            
             return false;
           }
         }
@@ -520,71 +673,47 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 13: {
-              bitField0_ |= 0x00000001;
-              version_ = input.readSFixed32();
-              break;
-            }
-            case 17: {
-              bitField0_ |= 0x00000002;
-              writeOrderID_ = input.readSFixed64();
-              break;
-            }
-            case 29: {
-              bitField0_ |= 0x00000004;
-              queueSize_ = input.readSFixed32();
-              break;
-            }
-            case 37: {
-              bitField0_ |= 0x00000008;
-              queueHead_ = input.readSFixed32();
-              break;
-            }
-            case 42: {
-              org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder subBuilder = org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addActiveLogs(subBuilder.buildPartial());
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required sfixed32 version = 1;
       private int version_ ;
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public boolean hasVersion() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public int getVersion() {
         return version_;
       }
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public Builder setVersion(int value) {
         bitField0_ |= 0x00000001;
         version_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public Builder clearVersion() {
         bitField0_ = (bitField0_ & ~0x00000001);
         version_ = 0;
@@ -594,18 +723,30 @@ public final class ProtosFactory {
 
       // required sfixed64 writeOrderID = 2;
       private long writeOrderID_ ;
+      /**
+       * <code>required sfixed64 writeOrderID = 2;</code>
+       */
       public boolean hasWriteOrderID() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required sfixed64 writeOrderID = 2;</code>
+       */
       public long getWriteOrderID() {
         return writeOrderID_;
       }
+      /**
+       * <code>required sfixed64 writeOrderID = 2;</code>
+       */
       public Builder setWriteOrderID(long value) {
         bitField0_ |= 0x00000002;
         writeOrderID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed64 writeOrderID = 2;</code>
+       */
       public Builder clearWriteOrderID() {
         bitField0_ = (bitField0_ & ~0x00000002);
         writeOrderID_ = 0L;
@@ -615,18 +756,30 @@ public final class ProtosFactory {
 
       // required sfixed32 queueSize = 3;
       private int queueSize_ ;
+      /**
+       * <code>required sfixed32 queueSize = 3;</code>
+       */
       public boolean hasQueueSize() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required sfixed32 queueSize = 3;</code>
+       */
       public int getQueueSize() {
         return queueSize_;
       }
+      /**
+       * <code>required sfixed32 queueSize = 3;</code>
+       */
       public Builder setQueueSize(int value) {
         bitField0_ |= 0x00000004;
         queueSize_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 queueSize = 3;</code>
+       */
       public Builder clearQueueSize() {
         bitField0_ = (bitField0_ & ~0x00000004);
         queueSize_ = 0;
@@ -636,18 +789,30 @@ public final class ProtosFactory {
 
       // required sfixed32 queueHead = 4;
       private int queueHead_ ;
+      /**
+       * <code>required sfixed32 queueHead = 4;</code>
+       */
       public boolean hasQueueHead() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
+      /**
+       * <code>required sfixed32 queueHead = 4;</code>
+       */
       public int getQueueHead() {
         return queueHead_;
       }
+      /**
+       * <code>required sfixed32 queueHead = 4;</code>
+       */
       public Builder setQueueHead(int value) {
         bitField0_ |= 0x00000008;
         queueHead_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 queueHead = 4;</code>
+       */
       public Builder clearQueueHead() {
         bitField0_ = (bitField0_ & ~0x00000008);
         queueHead_ = 0;
@@ -668,6 +833,9 @@ public final class ProtosFactory {
       private com.google.protobuf.RepeatedFieldBuilder<
           org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder> activeLogsBuilder_;
 
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog> getActiveLogsList() {
         if (activeLogsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(activeLogs_);
@@ -675,6 +843,9 @@ public final class ProtosFactory {
           return activeLogsBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public int getActiveLogsCount() {
         if (activeLogsBuilder_ == null) {
           return activeLogs_.size();
@@ -682,6 +853,9 @@ public final class ProtosFactory {
           return activeLogsBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog getActiveLogs(int index) {
         if (activeLogsBuilder_ == null) {
           return activeLogs_.get(index);
@@ -689,6 +863,9 @@ public final class ProtosFactory {
           return activeLogsBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder setActiveLogs(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog value) {
         if (activeLogsBuilder_ == null) {
@@ -703,6 +880,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder setActiveLogs(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder builderForValue) {
         if (activeLogsBuilder_ == null) {
@@ -714,6 +894,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder addActiveLogs(org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog value) {
         if (activeLogsBuilder_ == null) {
           if (value == null) {
@@ -727,6 +910,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder addActiveLogs(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog value) {
         if (activeLogsBuilder_ == null) {
@@ -741,6 +927,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder addActiveLogs(
           org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder builderForValue) {
         if (activeLogsBuilder_ == null) {
@@ -752,6 +941,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder addActiveLogs(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder builderForValue) {
         if (activeLogsBuilder_ == null) {
@@ -763,6 +955,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder addAllActiveLogs(
           java.lang.Iterable<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog> values) {
         if (activeLogsBuilder_ == null) {
@@ -774,6 +969,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder clearActiveLogs() {
         if (activeLogsBuilder_ == null) {
           activeLogs_ = java.util.Collections.emptyList();
@@ -784,6 +982,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public Builder removeActiveLogs(int index) {
         if (activeLogsBuilder_ == null) {
           ensureActiveLogsIsMutable();
@@ -794,10 +995,16 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder getActiveLogsBuilder(
           int index) {
         return getActiveLogsFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder getActiveLogsOrBuilder(
           int index) {
         if (activeLogsBuilder_ == null) {
@@ -805,7 +1012,10 @@ public final class ProtosFactory {
           return activeLogsBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder>
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
+      public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder> 
            getActiveLogsOrBuilderList() {
         if (activeLogsBuilder_ != null) {
           return activeLogsBuilder_.getMessageOrBuilderList();
@@ -813,21 +1023,30 @@ public final class ProtosFactory {
           return java.util.Collections.unmodifiableList(activeLogs_);
         }
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder addActiveLogsBuilder() {
         return getActiveLogsFieldBuilder().addBuilder(
             org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.getDefaultInstance());
       }
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder addActiveLogsBuilder(
           int index) {
         return getActiveLogsFieldBuilder().addBuilder(
             index, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.getDefaultInstance());
       }
-      public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder>
+      /**
+       * <code>repeated .ActiveLog activeLogs = 5;</code>
+       */
+      public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder> 
            getActiveLogsBuilderList() {
         return getActiveLogsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder>
+          org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder> 
           getActiveLogsFieldBuilder() {
         if (activeLogsBuilder_ == null) {
           activeLogsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
@@ -856,21 +1075,37 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required sfixed32 logFileID = 1;
+    /**
+     * <code>required sfixed32 logFileID = 1;</code>
+     */
     boolean hasLogFileID();
+    /**
+     * <code>required sfixed32 logFileID = 1;</code>
+     */
     int getLogFileID();
 
     // required sfixed32 count = 2;
+    /**
+     * <code>required sfixed32 count = 2;</code>
+     */
     boolean hasCount();
+    /**
+     * <code>required sfixed32 count = 2;</code>
+     */
     int getCount();
   }
+  /**
+   * Protobuf type {@code ActiveLog}
+   */
   public static final class ActiveLog extends
       com.google.protobuf.GeneratedMessage
       implements ActiveLogOrBuilder {
     // Use ActiveLog.newBuilder() to construct.
-    private ActiveLog(Builder builder) {
+    private ActiveLog(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private ActiveLog(boolean noInit) {}
+    private ActiveLog(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final ActiveLog defaultInstance;
     public static ActiveLog getDefaultInstance() {
@@ -881,6 +1116,57 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ActiveLog(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+              bitField0_ |= 0x00000001;
+              logFileID_ = input.readSFixed32();
+              break;
+            }
+            case 21: {
+              bitField0_ |= 0x00000002;
+              count_ = input.readSFixed32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_ActiveLog_descriptor;
@@ -888,16 +1174,39 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_ActiveLog_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_ActiveLog_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.class, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<ActiveLog> PARSER =
+        new com.google.protobuf.AbstractParser<ActiveLog>() {
+      public ActiveLog parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ActiveLog(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ActiveLog> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required sfixed32 logFileID = 1;
     public static final int LOGFILEID_FIELD_NUMBER = 1;
     private int logFileID_;
+    /**
+     * <code>required sfixed32 logFileID = 1;</code>
+     */
     public boolean hasLogFileID() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required sfixed32 logFileID = 1;</code>
+     */
     public int getLogFileID() {
       return logFileID_;
     }
@@ -905,9 +1214,15 @@ public final class ProtosFactory {
     // required sfixed32 count = 2;
     public static final int COUNT_FIELD_NUMBER = 2;
     private int count_;
+    /**
+     * <code>required sfixed32 count = 2;</code>
+     */
     public boolean hasCount() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required sfixed32 count = 2;</code>
+     */
     public int getCount() {
       return count_;
     }
@@ -974,68 +1289,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -1051,6 +1352,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code ActiveLog}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.ActiveLogOrBuilder {
@@ -1061,7 +1365,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_ActiveLog_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_ActiveLog_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.class, org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.newBuilder()
@@ -1069,7 +1375,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -1096,7 +1403,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_ActiveLog_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog getDefaultInstanceForType() {
@@ -1107,16 +1414,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -1161,11 +1458,11 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasLogFileID()) {
-
+          
           return false;
         }
         if (!hasCount()) {
-
+          
           return false;
         }
         return true;
@@ -1175,55 +1472,47 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 13: {
-              bitField0_ |= 0x00000001;
-              logFileID_ = input.readSFixed32();
-              break;
-            }
-            case 21: {
-              bitField0_ |= 0x00000002;
-              count_ = input.readSFixed32();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required sfixed32 logFileID = 1;
       private int logFileID_ ;
+      /**
+       * <code>required sfixed32 logFileID = 1;</code>
+       */
       public boolean hasLogFileID() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required sfixed32 logFileID = 1;</code>
+       */
       public int getLogFileID() {
         return logFileID_;
       }
+      /**
+       * <code>required sfixed32 logFileID = 1;</code>
+       */
       public Builder setLogFileID(int value) {
         bitField0_ |= 0x00000001;
         logFileID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 logFileID = 1;</code>
+       */
       public Builder clearLogFileID() {
         bitField0_ = (bitField0_ & ~0x00000001);
         logFileID_ = 0;
@@ -1233,18 +1522,30 @@ public final class ProtosFactory {
 
       // required sfixed32 count = 2;
       private int count_ ;
+      /**
+       * <code>required sfixed32 count = 2;</code>
+       */
       public boolean hasCount() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required sfixed32 count = 2;</code>
+       */
       public int getCount() {
         return count_;
       }
+      /**
+       * <code>required sfixed32 count = 2;</code>
+       */
       public Builder setCount(int value) {
         bitField0_ |= 0x00000002;
         count_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 count = 2;</code>
+       */
       public Builder clearCount() {
         bitField0_ = (bitField0_ & ~0x00000002);
         count_ = 0;
@@ -1267,42 +1568,91 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required sfixed32 version = 1;
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     boolean hasVersion();
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     int getVersion();
 
     // required sfixed32 logFileID = 2;
+    /**
+     * <code>required sfixed32 logFileID = 2;</code>
+     */
     boolean hasLogFileID();
+    /**
+     * <code>required sfixed32 logFileID = 2;</code>
+     */
     int getLogFileID();
 
     // required sfixed64 checkpointPosition = 3;
+    /**
+     * <code>required sfixed64 checkpointPosition = 3;</code>
+     */
     boolean hasCheckpointPosition();
+    /**
+     * <code>required sfixed64 checkpointPosition = 3;</code>
+     */
     long getCheckpointPosition();
 
     // required sfixed64 checkpointWriteOrderID = 4;
+    /**
+     * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+     */
     boolean hasCheckpointWriteOrderID();
+    /**
+     * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+     */
     long getCheckpointWriteOrderID();
 
     // optional .LogFileEncryption encryption = 5;
+    /**
+     * <code>optional .LogFileEncryption encryption = 5;</code>
+     */
     boolean hasEncryption();
+    /**
+     * <code>optional .LogFileEncryption encryption = 5;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption getEncryption();
+    /**
+     * <code>optional .LogFileEncryption encryption = 5;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder getEncryptionOrBuilder();
 
     // optional sfixed64 backupCheckpointPosition = 6;
+    /**
+     * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+     */
     boolean hasBackupCheckpointPosition();
+    /**
+     * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+     */
     long getBackupCheckpointPosition();
 
     // optional sfixed64 backupCheckpointWriteOrderID = 7;
+    /**
+     * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+     */
     boolean hasBackupCheckpointWriteOrderID();
+    /**
+     * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+     */
     long getBackupCheckpointWriteOrderID();
   }
+  /**
+   * Protobuf type {@code LogFileMetaData}
+   */
   public static final class LogFileMetaData extends
       com.google.protobuf.GeneratedMessage
       implements LogFileMetaDataOrBuilder {
     // Use LogFileMetaData.newBuilder() to construct.
-    private LogFileMetaData(Builder builder) {
+    private LogFileMetaData(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private LogFileMetaData(boolean noInit) {}
+    private LogFileMetaData(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final LogFileMetaData defaultInstance;
     public static LogFileMetaData getDefaultInstance() {
@@ -1313,6 +1663,90 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private LogFileMetaData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+              bitField0_ |= 0x00000001;
+              version_ = input.readSFixed32();
+              break;
+            }
+            case 21: {
+              bitField0_ |= 0x00000002;
+              logFileID_ = input.readSFixed32();
+              break;
+            }
+            case 25: {
+              bitField0_ |= 0x00000004;
+              checkpointPosition_ = input.readSFixed64();
+              break;
+            }
+            case 33: {
+              bitField0_ |= 0x00000008;
+              checkpointWriteOrderID_ = input.readSFixed64();
+              break;
+            }
+            case 42: {
+              org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = encryption_.toBuilder();
+              }
+              encryption_ = input.readMessage(org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(encryption_);
+                encryption_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
+              break;
+            }
+            case 49: {
+              bitField0_ |= 0x00000020;
+              backupCheckpointPosition_ = input.readSFixed64();
+              break;
+            }
+            case 57: {
+              bitField0_ |= 0x00000040;
+              backupCheckpointWriteOrderID_ = input.readSFixed64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileMetaData_descriptor;
@@ -1320,16 +1754,39 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileMetaData_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileMetaData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.class, org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<LogFileMetaData> PARSER =
+        new com.google.protobuf.AbstractParser<LogFileMetaData>() {
+      public LogFileMetaData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new LogFileMetaData(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<LogFileMetaData> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required sfixed32 version = 1;
     public static final int VERSION_FIELD_NUMBER = 1;
     private int version_;
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     public boolean hasVersion() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required sfixed32 version = 1;</code>
+     */
     public int getVersion() {
       return version_;
     }
@@ -1337,9 +1794,15 @@ public final class ProtosFactory {
     // required sfixed32 logFileID = 2;
     public static final int LOGFILEID_FIELD_NUMBER = 2;
     private int logFileID_;
+    /**
+     * <code>required sfixed32 logFileID = 2;</code>
+     */
     public boolean hasLogFileID() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required sfixed32 logFileID = 2;</code>
+     */
     public int getLogFileID() {
       return logFileID_;
     }
@@ -1347,9 +1810,15 @@ public final class ProtosFactory {
     // required sfixed64 checkpointPosition = 3;
     public static final int CHECKPOINTPOSITION_FIELD_NUMBER = 3;
     private long checkpointPosition_;
+    /**
+     * <code>required sfixed64 checkpointPosition = 3;</code>
+     */
     public boolean hasCheckpointPosition() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
+    /**
+     * <code>required sfixed64 checkpointPosition = 3;</code>
+     */
     public long getCheckpointPosition() {
       return checkpointPosition_;
     }
@@ -1357,9 +1826,15 @@ public final class ProtosFactory {
     // required sfixed64 checkpointWriteOrderID = 4;
     public static final int CHECKPOINTWRITEORDERID_FIELD_NUMBER = 4;
     private long checkpointWriteOrderID_;
+    /**
+     * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+     */
     public boolean hasCheckpointWriteOrderID() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
+    /**
+     * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+     */
     public long getCheckpointWriteOrderID() {
       return checkpointWriteOrderID_;
     }
@@ -1367,12 +1842,21 @@ public final class ProtosFactory {
     // optional .LogFileEncryption encryption = 5;
     public static final int ENCRYPTION_FIELD_NUMBER = 5;
     private org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption encryption_;
+    /**
+     * <code>optional .LogFileEncryption encryption = 5;</code>
+     */
     public boolean hasEncryption() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
+    /**
+     * <code>optional .LogFileEncryption encryption = 5;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption getEncryption() {
       return encryption_;
     }
+    /**
+     * <code>optional .LogFileEncryption encryption = 5;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder getEncryptionOrBuilder() {
       return encryption_;
     }
@@ -1380,9 +1864,15 @@ public final class ProtosFactory {
     // optional sfixed64 backupCheckpointPosition = 6;
     public static final int BACKUPCHECKPOINTPOSITION_FIELD_NUMBER = 6;
     private long backupCheckpointPosition_;
+    /**
+     * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+     */
     public boolean hasBackupCheckpointPosition() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
+    /**
+     * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+     */
     public long getBackupCheckpointPosition() {
       return backupCheckpointPosition_;
     }
@@ -1390,9 +1880,15 @@ public final class ProtosFactory {
     // optional sfixed64 backupCheckpointWriteOrderID = 7;
     public static final int BACKUPCHECKPOINTWRITEORDERID_FIELD_NUMBER = 7;
     private long backupCheckpointWriteOrderID_;
+    /**
+     * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+     */
     public boolean hasBackupCheckpointWriteOrderID() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
+    /**
+     * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+     */
     public long getBackupCheckpointWriteOrderID() {
       return backupCheckpointWriteOrderID_;
     }
@@ -1513,68 +2009,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -1590,6 +2072,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code LogFileMetaData}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaDataOrBuilder {
@@ -1600,7 +2085,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileMetaData_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileMetaData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.class, org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.newBuilder()
@@ -1608,7 +2095,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -1650,7 +2138,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileMetaData_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData getDefaultInstanceForType() {
@@ -1661,16 +2149,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -1754,24 +2232,24 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasVersion()) {
-
+          
           return false;
         }
         if (!hasLogFileID()) {
-
+          
           return false;
         }
         if (!hasCheckpointPosition()) {
-
+          
           return false;
         }
         if (!hasCheckpointWriteOrderID()) {
-
+          
           return false;
         }
         if (hasEncryption()) {
           if (!getEncryption().isInitialized()) {
-
+            
             return false;
           }
         }
@@ -1782,84 +2260,47 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 13: {
-              bitField0_ |= 0x00000001;
-              version_ = input.readSFixed32();
-              break;
-            }
-            case 21: {
-              bitField0_ |= 0x00000002;
-              logFileID_ = input.readSFixed32();
-              break;
-            }
-            case 25: {
-              bitField0_ |= 0x00000004;
-              checkpointPosition_ = input.readSFixed64();
-              break;
-            }
-            case 33: {
-              bitField0_ |= 0x00000008;
-              checkpointWriteOrderID_ = input.readSFixed64();
-              break;
-            }
-            case 42: {
-              org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder subBuilder = org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.newBuilder();
-              if (hasEncryption()) {
-                subBuilder.mergeFrom(getEncryption());
-              }
-              input.readMessage(subBuilder, extensionRegistry);
-              setEncryption(subBuilder.buildPartial());
-              break;
-            }
-            case 49: {
-              bitField0_ |= 0x00000020;
-              backupCheckpointPosition_ = input.readSFixed64();
-              break;
-            }
-            case 57: {
-              bitField0_ |= 0x00000040;
-              backupCheckpointWriteOrderID_ = input.readSFixed64();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required sfixed32 version = 1;
       private int version_ ;
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public boolean hasVersion() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public int getVersion() {
         return version_;
       }
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public Builder setVersion(int value) {
         bitField0_ |= 0x00000001;
         version_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 version = 1;</code>
+       */
       public Builder clearVersion() {
         bitField0_ = (bitField0_ & ~0x00000001);
         version_ = 0;
@@ -1869,18 +2310,30 @@ public final class ProtosFactory {
 
       // required sfixed32 logFileID = 2;
       private int logFileID_ ;
+      /**
+       * <code>required sfixed32 logFileID = 2;</code>
+       */
       public boolean hasLogFileID() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required sfixed32 logFileID = 2;</code>
+       */
       public int getLogFileID() {
         return logFileID_;
       }
+      /**
+       * <code>required sfixed32 logFileID = 2;</code>
+       */
       public Builder setLogFileID(int value) {
         bitField0_ |= 0x00000002;
         logFileID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 logFileID = 2;</code>
+       */
       public Builder clearLogFileID() {
         bitField0_ = (bitField0_ & ~0x00000002);
         logFileID_ = 0;
@@ -1890,18 +2343,30 @@ public final class ProtosFactory {
 
       // required sfixed64 checkpointPosition = 3;
       private long checkpointPosition_ ;
+      /**
+       * <code>required sfixed64 checkpointPosition = 3;</code>
+       */
       public boolean hasCheckpointPosition() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required sfixed64 checkpointPosition = 3;</code>
+       */
       public long getCheckpointPosition() {
         return checkpointPosition_;
       }
+      /**
+       * <code>required sfixed64 checkpointPosition = 3;</code>
+       */
       public Builder setCheckpointPosition(long value) {
         bitField0_ |= 0x00000004;
         checkpointPosition_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed64 checkpointPosition = 3;</code>
+       */
       public Builder clearCheckpointPosition() {
         bitField0_ = (bitField0_ & ~0x00000004);
         checkpointPosition_ = 0L;
@@ -1911,18 +2376,30 @@ public final class ProtosFactory {
 
       // required sfixed64 checkpointWriteOrderID = 4;
       private long checkpointWriteOrderID_ ;
+      /**
+       * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+       */
       public boolean hasCheckpointWriteOrderID() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
+      /**
+       * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+       */
       public long getCheckpointWriteOrderID() {
         return checkpointWriteOrderID_;
       }
+      /**
+       * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+       */
       public Builder setCheckpointWriteOrderID(long value) {
         bitField0_ |= 0x00000008;
         checkpointWriteOrderID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed64 checkpointWriteOrderID = 4;</code>
+       */
       public Builder clearCheckpointWriteOrderID() {
         bitField0_ = (bitField0_ & ~0x00000008);
         checkpointWriteOrderID_ = 0L;
@@ -1934,9 +2411,15 @@ public final class ProtosFactory {
       private org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption encryption_ = org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder> encryptionBuilder_;
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public boolean hasEncryption() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption getEncryption() {
         if (encryptionBuilder_ == null) {
           return encryption_;
@@ -1944,6 +2427,9 @@ public final class ProtosFactory {
           return encryptionBuilder_.getMessage();
         }
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public Builder setEncryption(org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption value) {
         if (encryptionBuilder_ == null) {
           if (value == null) {
@@ -1957,6 +2443,9 @@ public final class ProtosFactory {
         bitField0_ |= 0x00000010;
         return this;
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public Builder setEncryption(
           org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder builderForValue) {
         if (encryptionBuilder_ == null) {
@@ -1968,6 +2457,9 @@ public final class ProtosFactory {
         bitField0_ |= 0x00000010;
         return this;
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public Builder mergeEncryption(org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption value) {
         if (encryptionBuilder_ == null) {
           if (((bitField0_ & 0x00000010) == 0x00000010) &&
@@ -1984,6 +2476,9 @@ public final class ProtosFactory {
         bitField0_ |= 0x00000010;
         return this;
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public Builder clearEncryption() {
         if (encryptionBuilder_ == null) {
           encryption_ = org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.getDefaultInstance();
@@ -1994,11 +2489,17 @@ public final class ProtosFactory {
         bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder getEncryptionBuilder() {
         bitField0_ |= 0x00000010;
         onChanged();
         return getEncryptionFieldBuilder().getBuilder();
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder getEncryptionOrBuilder() {
         if (encryptionBuilder_ != null) {
           return encryptionBuilder_.getMessageOrBuilder();
@@ -2006,8 +2507,11 @@ public final class ProtosFactory {
           return encryption_;
         }
       }
+      /**
+       * <code>optional .LogFileEncryption encryption = 5;</code>
+       */
       private com.google.protobuf.SingleFieldBuilder<
-          org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder>
+          org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder> 
           getEncryptionFieldBuilder() {
         if (encryptionBuilder_ == null) {
           encryptionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
@@ -2022,18 +2526,30 @@ public final class ProtosFactory {
 
       // optional sfixed64 backupCheckpointPosition = 6;
       private long backupCheckpointPosition_ ;
+      /**
+       * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+       */
       public boolean hasBackupCheckpointPosition() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
+      /**
+       * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+       */
       public long getBackupCheckpointPosition() {
         return backupCheckpointPosition_;
       }
+      /**
+       * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+       */
       public Builder setBackupCheckpointPosition(long value) {
         bitField0_ |= 0x00000020;
         backupCheckpointPosition_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional sfixed64 backupCheckpointPosition = 6;</code>
+       */
       public Builder clearBackupCheckpointPosition() {
         bitField0_ = (bitField0_ & ~0x00000020);
         backupCheckpointPosition_ = 0L;
@@ -2043,18 +2559,30 @@ public final class ProtosFactory {
 
       // optional sfixed64 backupCheckpointWriteOrderID = 7;
       private long backupCheckpointWriteOrderID_ ;
+      /**
+       * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+       */
       public boolean hasBackupCheckpointWriteOrderID() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
+      /**
+       * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+       */
       public long getBackupCheckpointWriteOrderID() {
         return backupCheckpointWriteOrderID_;
       }
+      /**
+       * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+       */
       public Builder setBackupCheckpointWriteOrderID(long value) {
         bitField0_ |= 0x00000040;
         backupCheckpointWriteOrderID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional sfixed64 backupCheckpointWriteOrderID = 7;</code>
+       */
       public Builder clearBackupCheckpointWriteOrderID() {
         bitField0_ = (bitField0_ & ~0x00000040);
         backupCheckpointWriteOrderID_ = 0L;
@@ -2077,25 +2605,57 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required string cipherProvider = 1;
+    /**
+     * <code>required string cipherProvider = 1;</code>
+     */
     boolean hasCipherProvider();
-    String getCipherProvider();
+    /**
+     * <code>required string cipherProvider = 1;</code>
+     */
+    java.lang.String getCipherProvider();
+    /**
+     * <code>required string cipherProvider = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getCipherProviderBytes();
 
     // required string keyAlias = 2;
+    /**
+     * <code>required string keyAlias = 2;</code>
+     */
     boolean hasKeyAlias();
-    String getKeyAlias();
+    /**
+     * <code>required string keyAlias = 2;</code>
+     */
+    java.lang.String getKeyAlias();
+    /**
+     * <code>required string keyAlias = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getKeyAliasBytes();
 
     // optional bytes parameters = 3;
+    /**
+     * <code>optional bytes parameters = 3;</code>
+     */
     boolean hasParameters();
+    /**
+     * <code>optional bytes parameters = 3;</code>
+     */
     com.google.protobuf.ByteString getParameters();
   }
+  /**
+   * Protobuf type {@code LogFileEncryption}
+   */
   public static final class LogFileEncryption extends
       com.google.protobuf.GeneratedMessage
       implements LogFileEncryptionOrBuilder {
     // Use LogFileEncryption.newBuilder() to construct.
-    private LogFileEncryption(Builder builder) {
+    private LogFileEncryption(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private LogFileEncryption(boolean noInit) {}
+    private LogFileEncryption(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final LogFileEncryption defaultInstance;
     public static LogFileEncryption getDefaultInstance() {
@@ -2106,6 +2666,62 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private LogFileEncryption(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              cipherProvider_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              keyAlias_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              parameters_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileEncryption_descriptor;
@@ -2113,35 +2729,63 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileEncryption_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileEncryption_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.class, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<LogFileEncryption> PARSER =
+        new com.google.protobuf.AbstractParser<LogFileEncryption>() {
+      public LogFileEncryption parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new LogFileEncryption(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<LogFileEncryption> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required string cipherProvider = 1;
     public static final int CIPHERPROVIDER_FIELD_NUMBER = 1;
     private java.lang.Object cipherProvider_;
+    /**
+     * <code>required string cipherProvider = 1;</code>
+     */
     public boolean hasCipherProvider() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getCipherProvider() {
+    /**
+     * <code>required string cipherProvider = 1;</code>
+     */
+    public java.lang.String getCipherProvider() {
       java.lang.Object ref = cipherProvider_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           cipherProvider_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getCipherProviderBytes() {
+    /**
+     * <code>required string cipherProvider = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCipherProviderBytes() {
       java.lang.Object ref = cipherProvider_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         cipherProvider_ = b;
         return b;
       } else {
@@ -2152,28 +2796,39 @@ public final class ProtosFactory {
     // required string keyAlias = 2;
     public static final int KEYALIAS_FIELD_NUMBER = 2;
     private java.lang.Object keyAlias_;
+    /**
+     * <code>required string keyAlias = 2;</code>
+     */
     public boolean hasKeyAlias() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getKeyAlias() {
+    /**
+     * <code>required string keyAlias = 2;</code>
+     */
+    public java.lang.String getKeyAlias() {
       java.lang.Object ref = keyAlias_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           keyAlias_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getKeyAliasBytes() {
+    /**
+     * <code>required string keyAlias = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getKeyAliasBytes() {
       java.lang.Object ref = keyAlias_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         keyAlias_ = b;
         return b;
       } else {
@@ -2184,9 +2839,15 @@ public final class ProtosFactory {
     // optional bytes parameters = 3;
     public static final int PARAMETERS_FIELD_NUMBER = 3;
     private com.google.protobuf.ByteString parameters_;
+    /**
+     * <code>optional bytes parameters = 3;</code>
+     */
     public boolean hasParameters() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
+    /**
+     * <code>optional bytes parameters = 3;</code>
+     */
     public com.google.protobuf.ByteString getParameters() {
       return parameters_;
     }
@@ -2261,68 +2922,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -2338,6 +2985,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code LogFileEncryption}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryptionOrBuilder {
@@ -2348,7 +2998,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileEncryption_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileEncryption_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.class, org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.newBuilder()
@@ -2356,7 +3008,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -2385,7 +3038,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_LogFileEncryption_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption getDefaultInstanceForType() {
@@ -2396,16 +3049,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -2443,10 +3086,14 @@ public final class ProtosFactory {
       public Builder mergeFrom(org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption other) {
         if (other == org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.getDefaultInstance()) return this;
         if (other.hasCipherProvider()) {
-          setCipherProvider(other.getCipherProvider());
+          bitField0_ |= 0x00000001;
+          cipherProvider_ = other.cipherProvider_;
+          onChanged();
         }
         if (other.hasKeyAlias()) {
-          setKeyAlias(other.getKeyAlias());
+          bitField0_ |= 0x00000002;
+          keyAlias_ = other.keyAlias_;
+          onChanged();
         }
         if (other.hasParameters()) {
           setParameters(other.getParameters());
@@ -2457,11 +3104,11 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasCipherProvider()) {
-
+          
           return false;
         }
         if (!hasKeyAlias()) {
-
+          
           return false;
         }
         return true;
@@ -2471,62 +3118,64 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              cipherProvider_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              keyAlias_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              parameters_ = input.readBytes();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required string cipherProvider = 1;
       private java.lang.Object cipherProvider_ = "";
+      /**
+       * <code>required string cipherProvider = 1;</code>
+       */
       public boolean hasCipherProvider() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getCipherProvider() {
+      /**
+       * <code>required string cipherProvider = 1;</code>
+       */
+      public java.lang.String getCipherProvider() {
         java.lang.Object ref = cipherProvider_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           cipherProvider_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setCipherProvider(String value) {
+      /**
+       * <code>required string cipherProvider = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCipherProviderBytes() {
+        java.lang.Object ref = cipherProvider_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          cipherProvider_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string cipherProvider = 1;</code>
+       */
+      public Builder setCipherProvider(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2535,34 +3184,72 @@ public final class ProtosFactory {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string cipherProvider = 1;</code>
+       */
       public Builder clearCipherProvider() {
         bitField0_ = (bitField0_ & ~0x00000001);
         cipherProvider_ = getDefaultInstance().getCipherProvider();
         onChanged();
         return this;
       }
-      void setCipherProvider(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+      /**
+       * <code>required string cipherProvider = 1;</code>
+       */
+      public Builder setCipherProviderBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         cipherProvider_ = value;
         onChanged();
+        return this;
       }
 
       // required string keyAlias = 2;
       private java.lang.Object keyAlias_ = "";
+      /**
+       * <code>required string keyAlias = 2;</code>
+       */
       public boolean hasKeyAlias() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getKeyAlias() {
+      /**
+       * <code>required string keyAlias = 2;</code>
+       */
+      public java.lang.String getKeyAlias() {
         java.lang.Object ref = keyAlias_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           keyAlias_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setKeyAlias(String value) {
+      /**
+       * <code>required string keyAlias = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getKeyAliasBytes() {
+        java.lang.Object ref = keyAlias_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          keyAlias_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string keyAlias = 2;</code>
+       */
+      public Builder setKeyAlias(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2571,26 +3258,46 @@ public final class ProtosFactory {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string keyAlias = 2;</code>
+       */
       public Builder clearKeyAlias() {
         bitField0_ = (bitField0_ & ~0x00000002);
         keyAlias_ = getDefaultInstance().getKeyAlias();
         onChanged();
         return this;
       }
-      void setKeyAlias(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+      /**
+       * <code>required string keyAlias = 2;</code>
+       */
+      public Builder setKeyAliasBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         keyAlias_ = value;
         onChanged();
+        return this;
       }
 
       // optional bytes parameters = 3;
       private com.google.protobuf.ByteString parameters_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes parameters = 3;</code>
+       */
       public boolean hasParameters() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>optional bytes parameters = 3;</code>
+       */
       public com.google.protobuf.ByteString getParameters() {
         return parameters_;
       }
+      /**
+       * <code>optional bytes parameters = 3;</code>
+       */
       public Builder setParameters(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -2600,6 +3307,9 @@ public final class ProtosFactory {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional bytes parameters = 3;</code>
+       */
       public Builder clearParameters() {
         bitField0_ = (bitField0_ & ~0x00000004);
         parameters_ = getDefaultInstance().getParameters();
@@ -2622,25 +3332,47 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required sfixed32 type = 1;
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     boolean hasType();
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     int getType();
 
     // required sfixed64 transactionID = 2;
+    /**
+     * <code>required sfixed64 transactionID = 2;</code>
+     */
     boolean hasTransactionID();
+    /**
+     * <code>required sfixed64 transactionID = 2;</code>
+     */
     long getTransactionID();
 
     // required sfixed64 writeOrderID = 3;
+    /**
+     * <code>required sfixed64 writeOrderID = 3;</code>
+     */
     boolean hasWriteOrderID();
+    /**
+     * <code>required sfixed64 writeOrderID = 3;</code>
+     */
     long getWriteOrderID();
   }
+  /**
+   * Protobuf type {@code TransactionEventHeader}
+   */
   public static final class TransactionEventHeader extends
       com.google.protobuf.GeneratedMessage
       implements TransactionEventHeaderOrBuilder {
     // Use TransactionEventHeader.newBuilder() to construct.
-    private TransactionEventHeader(Builder builder) {
+    private TransactionEventHeader(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private TransactionEventHeader(boolean noInit) {}
+    private TransactionEventHeader(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final TransactionEventHeader defaultInstance;
     public static TransactionEventHeader getDefaultInstance() {
@@ -2651,6 +3383,62 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TransactionEventHeader(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+              bitField0_ |= 0x00000001;
+              type_ = input.readSFixed32();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              transactionID_ = input.readSFixed64();
+              break;
+            }
+            case 25: {
+              bitField0_ |= 0x00000004;
+              writeOrderID_ = input.readSFixed64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventHeader_descriptor;
@@ -2658,16 +3446,39 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventHeader_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventHeader_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.class, org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<TransactionEventHeader> PARSER =
+        new com.google.protobuf.AbstractParser<TransactionEventHeader>() {
+      public TransactionEventHeader parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TransactionEventHeader(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TransactionEventHeader> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required sfixed32 type = 1;
     public static final int TYPE_FIELD_NUMBER = 1;
     private int type_;
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     public boolean hasType() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     public int getType() {
       return type_;
     }
@@ -2675,9 +3486,15 @@ public final class ProtosFactory {
     // required sfixed64 transactionID = 2;
     public static final int TRANSACTIONID_FIELD_NUMBER = 2;
     private long transactionID_;
+    /**
+     * <code>required sfixed64 transactionID = 2;</code>
+     */
     public boolean hasTransactionID() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required sfixed64 transactionID = 2;</code>
+     */
     public long getTransactionID() {
       return transactionID_;
     }
@@ -2685,9 +3502,15 @@ public final class ProtosFactory {
     // required sfixed64 writeOrderID = 3;
     public static final int WRITEORDERID_FIELD_NUMBER = 3;
     private long writeOrderID_;
+    /**
+     * <code>required sfixed64 writeOrderID = 3;</code>
+     */
     public boolean hasWriteOrderID() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
+    /**
+     * <code>required sfixed64 writeOrderID = 3;</code>
+     */
     public long getWriteOrderID() {
       return writeOrderID_;
     }
@@ -2766,68 +3589,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -2843,6 +3652,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code TransactionEventHeader}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeaderOrBuilder {
@@ -2853,7 +3665,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventHeader_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventHeader_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.class, org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.newBuilder()
@@ -2861,7 +3675,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -2890,7 +3705,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventHeader_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader getDefaultInstanceForType() {
@@ -2901,16 +3716,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -2962,15 +3767,15 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasType()) {
-
+          
           return false;
         }
         if (!hasTransactionID()) {
-
+          
           return false;
         }
         if (!hasWriteOrderID()) {
-
+          
           return false;
         }
         return true;
@@ -2980,60 +3785,47 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 13: {
-              bitField0_ |= 0x00000001;
-              type_ = input.readSFixed32();
-              break;
-            }
-            case 17: {
-              bitField0_ |= 0x00000002;
-              transactionID_ = input.readSFixed64();
-              break;
-            }
-            case 25: {
-              bitField0_ |= 0x00000004;
-              writeOrderID_ = input.readSFixed64();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required sfixed32 type = 1;
       private int type_ ;
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public boolean hasType() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public int getType() {
         return type_;
       }
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public Builder setType(int value) {
         bitField0_ |= 0x00000001;
         type_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000001);
         type_ = 0;
@@ -3043,18 +3835,30 @@ public final class ProtosFactory {
 
       // required sfixed64 transactionID = 2;
       private long transactionID_ ;
+      /**
+       * <code>required sfixed64 transactionID = 2;</code>
+       */
       public boolean hasTransactionID() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required sfixed64 transactionID = 2;</code>
+       */
       public long getTransactionID() {
         return transactionID_;
       }
+      /**
+       * <code>required sfixed64 transactionID = 2;</code>
+       */
       public Builder setTransactionID(long value) {
         bitField0_ |= 0x00000002;
         transactionID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed64 transactionID = 2;</code>
+       */
       public Builder clearTransactionID() {
         bitField0_ = (bitField0_ & ~0x00000002);
         transactionID_ = 0L;
@@ -3064,18 +3868,30 @@ public final class ProtosFactory {
 
       // required sfixed64 writeOrderID = 3;
       private long writeOrderID_ ;
+      /**
+       * <code>required sfixed64 writeOrderID = 3;</code>
+       */
       public boolean hasWriteOrderID() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required sfixed64 writeOrderID = 3;</code>
+       */
       public long getWriteOrderID() {
         return writeOrderID_;
       }
+      /**
+       * <code>required sfixed64 writeOrderID = 3;</code>
+       */
       public Builder setWriteOrderID(long value) {
         bitField0_ |= 0x00000004;
         writeOrderID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed64 writeOrderID = 3;</code>
+       */
       public Builder clearWriteOrderID() {
         bitField0_ = (bitField0_ & ~0x00000004);
         writeOrderID_ = 0L;
@@ -3098,18 +3914,41 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required .FlumeEvent event = 1;
+    /**
+     * <code>required .FlumeEvent event = 1;</code>
+     */
     boolean hasEvent();
+    /**
+     * <code>required .FlumeEvent event = 1;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent getEvent();
+    /**
+     * <code>required .FlumeEvent event = 1;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder getEventOrBuilder();
+
+    // optional sfixed64 checksum = 2;
+    /**
+     * <code>optional sfixed64 checksum = 2;</code>
+     */
+    boolean hasChecksum();
+    /**
+     * <code>optional sfixed64 checksum = 2;</code>
+     */
+    long getChecksum();
   }
+  /**
+   * Protobuf type {@code Put}
+   */
   public static final class Put extends
       com.google.protobuf.GeneratedMessage
       implements PutOrBuilder {
     // Use Put.newBuilder() to construct.
-    private Put(Builder builder) {
+    private Put(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Put(boolean noInit) {}
+    private Put(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final Put defaultInstance;
     public static Put getDefaultInstance() {
@@ -3120,6 +3959,65 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Put(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = event_.toBuilder();
+              }
+              event_ = input.readMessage(org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(event_);
+                event_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              checksum_ = input.readSFixed64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Put_descriptor;
@@ -3127,25 +4025,68 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Put_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Put_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.Put.class, org.apache.flume.channel.file.proto.ProtosFactory.Put.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Put> PARSER =
+        new com.google.protobuf.AbstractParser<Put>() {
+      public Put parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Put(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Put> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required .FlumeEvent event = 1;
     public static final int EVENT_FIELD_NUMBER = 1;
     private org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent event_;
+    /**
+     * <code>required .FlumeEvent event = 1;</code>
+     */
     public boolean hasEvent() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required .FlumeEvent event = 1;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent getEvent() {
       return event_;
     }
+    /**
+     * <code>required .FlumeEvent event = 1;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder getEventOrBuilder() {
       return event_;
     }
 
+    // optional sfixed64 checksum = 2;
+    public static final int CHECKSUM_FIELD_NUMBER = 2;
+    private long checksum_;
+    /**
+     * <code>optional sfixed64 checksum = 2;</code>
+     */
+    public boolean hasChecksum() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional sfixed64 checksum = 2;</code>
+     */
+    public long getChecksum() {
+      return checksum_;
+    }
+
     private void initFields() {
       event_ = org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.getDefaultInstance();
+      checksum_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3170,6 +4111,9 @@ public final class ProtosFactory {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeMessage(1, event_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeSFixed64(2, checksum_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3182,6 +4126,10 @@ public final class ProtosFactory {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, event_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSFixed64Size(2, checksum_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3198,68 +4146,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Put parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -3275,6 +4209,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code Put}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.PutOrBuilder {
@@ -3285,7 +4222,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Put_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Put_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.Put.class, org.apache.flume.channel.file.proto.ProtosFactory.Put.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.Put.newBuilder()
@@ -3293,7 +4232,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -3314,6 +4254,8 @@ public final class ProtosFactory {
           eventBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
+        checksum_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -3323,7 +4265,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.Put.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Put_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.Put getDefaultInstanceForType() {
@@ -3334,16 +4276,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.Put result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.Put buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.Put result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -3360,6 +4292,10 @@ public final class ProtosFactory {
         } else {
           result.event_ = eventBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.checksum_ = checksum_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3379,17 +4315,20 @@ public final class ProtosFactory {
         if (other.hasEvent()) {
           mergeEvent(other.getEvent());
         }
+        if (other.hasChecksum()) {
+          setChecksum(other.getChecksum());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasEvent()) {
-
+          
           return false;
         }
         if (!getEvent().isInitialized()) {
-
+          
           return false;
         }
         return true;
@@ -3399,47 +4338,34 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder subBuilder = org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.newBuilder();
-              if (hasEvent()) {
-                subBuilder.mergeFrom(getEvent());
-              }
-              input.readMessage(subBuilder, extensionRegistry);
-              setEvent(subBuilder.buildPartial());
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.Put parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.Put) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required .FlumeEvent event = 1;
       private org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent event_ = org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder> eventBuilder_;
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public boolean hasEvent() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent getEvent() {
         if (eventBuilder_ == null) {
           return event_;
@@ -3447,6 +4373,9 @@ public final class ProtosFactory {
           return eventBuilder_.getMessage();
         }
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public Builder setEvent(org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent value) {
         if (eventBuilder_ == null) {
           if (value == null) {
@@ -3460,6 +4389,9 @@ public final class ProtosFactory {
         bitField0_ |= 0x00000001;
         return this;
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public Builder setEvent(
           org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder builderForValue) {
         if (eventBuilder_ == null) {
@@ -3471,6 +4403,9 @@ public final class ProtosFactory {
         bitField0_ |= 0x00000001;
         return this;
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public Builder mergeEvent(org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent value) {
         if (eventBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001) &&
@@ -3487,6 +4422,9 @@ public final class ProtosFactory {
         bitField0_ |= 0x00000001;
         return this;
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public Builder clearEvent() {
         if (eventBuilder_ == null) {
           event_ = org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.getDefaultInstance();
@@ -3497,11 +4435,17 @@ public final class ProtosFactory {
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder getEventBuilder() {
         bitField0_ |= 0x00000001;
         onChanged();
         return getEventFieldBuilder().getBuilder();
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder getEventOrBuilder() {
         if (eventBuilder_ != null) {
           return eventBuilder_.getMessageOrBuilder();
@@ -3509,8 +4453,11 @@ public final class ProtosFactory {
           return event_;
         }
       }
+      /**
+       * <code>required .FlumeEvent event = 1;</code>
+       */
       private com.google.protobuf.SingleFieldBuilder<
-          org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder>
+          org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder> 
           getEventFieldBuilder() {
         if (eventBuilder_ == null) {
           eventBuilder_ = new com.google.protobuf.SingleFieldBuilder<
@@ -3521,6 +4468,39 @@ public final class ProtosFactory {
           event_ = null;
         }
         return eventBuilder_;
+      }
+
+      // optional sfixed64 checksum = 2;
+      private long checksum_ ;
+      /**
+       * <code>optional sfixed64 checksum = 2;</code>
+       */
+      public boolean hasChecksum() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional sfixed64 checksum = 2;</code>
+       */
+      public long getChecksum() {
+        return checksum_;
+      }
+      /**
+       * <code>optional sfixed64 checksum = 2;</code>
+       */
+      public Builder setChecksum(long value) {
+        bitField0_ |= 0x00000002;
+        checksum_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional sfixed64 checksum = 2;</code>
+       */
+      public Builder clearChecksum() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        checksum_ = 0L;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:Put)
@@ -3538,21 +4518,37 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required sfixed32 fileID = 1;
+    /**
+     * <code>required sfixed32 fileID = 1;</code>
+     */
     boolean hasFileID();
+    /**
+     * <code>required sfixed32 fileID = 1;</code>
+     */
     int getFileID();
 
     // required sfixed32 offset = 2;
+    /**
+     * <code>required sfixed32 offset = 2;</code>
+     */
     boolean hasOffset();
+    /**
+     * <code>required sfixed32 offset = 2;</code>
+     */
     int getOffset();
   }
+  /**
+   * Protobuf type {@code Take}
+   */
   public static final class Take extends
       com.google.protobuf.GeneratedMessage
       implements TakeOrBuilder {
     // Use Take.newBuilder() to construct.
-    private Take(Builder builder) {
+    private Take(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Take(boolean noInit) {}
+    private Take(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final Take defaultInstance;
     public static Take getDefaultInstance() {
@@ -3563,6 +4559,57 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Take(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+              bitField0_ |= 0x00000001;
+              fileID_ = input.readSFixed32();
+              break;
+            }
+            case 21: {
+              bitField0_ |= 0x00000002;
+              offset_ = input.readSFixed32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Take_descriptor;
@@ -3570,16 +4617,39 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Take_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Take_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.Take.class, org.apache.flume.channel.file.proto.ProtosFactory.Take.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Take> PARSER =
+        new com.google.protobuf.AbstractParser<Take>() {
+      public Take parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Take(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Take> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required sfixed32 fileID = 1;
     public static final int FILEID_FIELD_NUMBER = 1;
     private int fileID_;
+    /**
+     * <code>required sfixed32 fileID = 1;</code>
+     */
     public boolean hasFileID() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required sfixed32 fileID = 1;</code>
+     */
     public int getFileID() {
       return fileID_;
     }
@@ -3587,9 +4657,15 @@ public final class ProtosFactory {
     // required sfixed32 offset = 2;
     public static final int OFFSET_FIELD_NUMBER = 2;
     private int offset_;
+    /**
+     * <code>required sfixed32 offset = 2;</code>
+     */
     public boolean hasOffset() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required sfixed32 offset = 2;</code>
+     */
     public int getOffset() {
       return offset_;
     }
@@ -3656,68 +4732,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Take parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -3733,6 +4795,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code Take}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.TakeOrBuilder {
@@ -3743,7 +4808,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Take_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Take_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.Take.class, org.apache.flume.channel.file.proto.ProtosFactory.Take.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.Take.newBuilder()
@@ -3751,7 +4818,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -3778,7 +4846,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.Take.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Take_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.Take getDefaultInstanceForType() {
@@ -3789,16 +4857,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.Take result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.Take buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.Take result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -3843,11 +4901,11 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasFileID()) {
-
+          
           return false;
         }
         if (!hasOffset()) {
-
+          
           return false;
         }
         return true;
@@ -3857,55 +4915,47 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 13: {
-              bitField0_ |= 0x00000001;
-              fileID_ = input.readSFixed32();
-              break;
-            }
-            case 21: {
-              bitField0_ |= 0x00000002;
-              offset_ = input.readSFixed32();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.Take parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.Take) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required sfixed32 fileID = 1;
       private int fileID_ ;
+      /**
+       * <code>required sfixed32 fileID = 1;</code>
+       */
       public boolean hasFileID() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required sfixed32 fileID = 1;</code>
+       */
       public int getFileID() {
         return fileID_;
       }
+      /**
+       * <code>required sfixed32 fileID = 1;</code>
+       */
       public Builder setFileID(int value) {
         bitField0_ |= 0x00000001;
         fileID_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 fileID = 1;</code>
+       */
       public Builder clearFileID() {
         bitField0_ = (bitField0_ & ~0x00000001);
         fileID_ = 0;
@@ -3915,18 +4965,30 @@ public final class ProtosFactory {
 
       // required sfixed32 offset = 2;
       private int offset_ ;
+      /**
+       * <code>required sfixed32 offset = 2;</code>
+       */
       public boolean hasOffset() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required sfixed32 offset = 2;</code>
+       */
       public int getOffset() {
         return offset_;
       }
+      /**
+       * <code>required sfixed32 offset = 2;</code>
+       */
       public Builder setOffset(int value) {
         bitField0_ |= 0x00000002;
         offset_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 offset = 2;</code>
+       */
       public Builder clearOffset() {
         bitField0_ = (bitField0_ & ~0x00000002);
         offset_ = 0;
@@ -3948,14 +5010,18 @@ public final class ProtosFactory {
   public interface RollbackOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
   }
+  /**
+   * Protobuf type {@code Rollback}
+   */
   public static final class Rollback extends
       com.google.protobuf.GeneratedMessage
       implements RollbackOrBuilder {
     // Use Rollback.newBuilder() to construct.
-    private Rollback(Builder builder) {
+    private Rollback(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Rollback(boolean noInit) {}
+    private Rollback(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final Rollback defaultInstance;
     public static Rollback getDefaultInstance() {
@@ -3966,6 +5032,46 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Rollback(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Rollback_descriptor;
@@ -3973,7 +5079,24 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Rollback_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Rollback_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.Rollback.class, org.apache.flume.channel.file.proto.ProtosFactory.Rollback.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Rollback> PARSER =
+        new com.google.protobuf.AbstractParser<Rollback>() {
+      public Rollback parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Rollback(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Rollback> getParserForType() {
+      return PARSER;
     }
 
     private void initFields() {
@@ -4014,68 +5137,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Rollback parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -4091,6 +5200,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code Rollback}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.RollbackOrBuilder {
@@ -4101,7 +5213,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Rollback_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Rollback_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.Rollback.class, org.apache.flume.channel.file.proto.ProtosFactory.Rollback.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.Rollback.newBuilder()
@@ -4109,7 +5223,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -4132,7 +5247,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.Rollback.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Rollback_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.Rollback getDefaultInstanceForType() {
@@ -4143,16 +5258,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.Rollback result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.Rollback buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.Rollback result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -4186,29 +5291,19 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.Rollback parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.Rollback) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
 
       // @@protoc_insertion_point(builder_scope:Rollback)
     }
@@ -4225,17 +5320,27 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required sfixed32 type = 1;
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     boolean hasType();
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     int getType();
   }
+  /**
+   * Protobuf type {@code Commit}
+   */
   public static final class Commit extends
       com.google.protobuf.GeneratedMessage
       implements CommitOrBuilder {
     // Use Commit.newBuilder() to construct.
-    private Commit(Builder builder) {
+    private Commit(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Commit(boolean noInit) {}
+    private Commit(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final Commit defaultInstance;
     public static Commit getDefaultInstance() {
@@ -4246,6 +5351,52 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Commit(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+              bitField0_ |= 0x00000001;
+              type_ = input.readSFixed32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Commit_descriptor;
@@ -4253,16 +5404,39 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Commit_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Commit_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.Commit.class, org.apache.flume.channel.file.proto.ProtosFactory.Commit.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Commit> PARSER =
+        new com.google.protobuf.AbstractParser<Commit>() {
+      public Commit parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Commit(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Commit> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required sfixed32 type = 1;
     public static final int TYPE_FIELD_NUMBER = 1;
     private int type_;
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     public boolean hasType() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required sfixed32 type = 1;</code>
+     */
     public int getType() {
       return type_;
     }
@@ -4317,68 +5491,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.Commit parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -4394,6 +5554,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code Commit}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.CommitOrBuilder {
@@ -4404,7 +5567,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Commit_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Commit_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.Commit.class, org.apache.flume.channel.file.proto.ProtosFactory.Commit.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.Commit.newBuilder()
@@ -4412,7 +5577,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -4437,7 +5603,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.Commit.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_Commit_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.Commit getDefaultInstanceForType() {
@@ -4448,16 +5614,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.Commit result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.Commit buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.Commit result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -4495,7 +5651,7 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasType()) {
-
+          
           return false;
         }
         return true;
@@ -4505,50 +5661,47 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 13: {
-              bitField0_ |= 0x00000001;
-              type_ = input.readSFixed32();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.Commit parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.Commit) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required sfixed32 type = 1;
       private int type_ ;
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public boolean hasType() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public int getType() {
         return type_;
       }
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public Builder setType(int value) {
         bitField0_ |= 0x00000001;
         type_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required sfixed32 type = 1;</code>
+       */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000001);
         type_ = 0;
@@ -4570,14 +5723,18 @@ public final class ProtosFactory {
   public interface TransactionEventFooterOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
   }
+  /**
+   * Protobuf type {@code TransactionEventFooter}
+   */
   public static final class TransactionEventFooter extends
       com.google.protobuf.GeneratedMessage
       implements TransactionEventFooterOrBuilder {
     // Use TransactionEventFooter.newBuilder() to construct.
-    private TransactionEventFooter(Builder builder) {
+    private TransactionEventFooter(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private TransactionEventFooter(boolean noInit) {}
+    private TransactionEventFooter(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final TransactionEventFooter defaultInstance;
     public static TransactionEventFooter getDefaultInstance() {
@@ -4588,6 +5745,46 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TransactionEventFooter(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventFooter_descriptor;
@@ -4595,7 +5792,24 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventFooter_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventFooter_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.class, org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<TransactionEventFooter> PARSER =
+        new com.google.protobuf.AbstractParser<TransactionEventFooter>() {
+      public TransactionEventFooter parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TransactionEventFooter(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TransactionEventFooter> getParserForType() {
+      return PARSER;
     }
 
     private void initFields() {
@@ -4636,68 +5850,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -4713,6 +5913,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code TransactionEventFooter}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooterOrBuilder {
@@ -4723,7 +5926,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventFooter_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventFooter_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.class, org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.newBuilder()
@@ -4731,7 +5936,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -4754,7 +5960,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_TransactionEventFooter_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter getDefaultInstanceForType() {
@@ -4765,16 +5971,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -4808,29 +6004,19 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
 
       // @@protoc_insertion_point(builder_scope:TransactionEventFooter)
     }
@@ -4847,27 +6033,52 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // repeated .FlumeEventHeader headers = 1;
-    java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader>
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
+    java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader> 
         getHeadersList();
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader getHeaders(int index);
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     int getHeadersCount();
-    java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder>
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
+    java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder> 
         getHeadersOrBuilderList();
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder getHeadersOrBuilder(
         int index);
 
     // required bytes body = 2;
+    /**
+     * <code>required bytes body = 2;</code>
+     */
     boolean hasBody();
+    /**
+     * <code>required bytes body = 2;</code>
+     */
     com.google.protobuf.ByteString getBody();
   }
+  /**
+   * Protobuf type {@code FlumeEvent}
+   */
   public static final class FlumeEvent extends
       com.google.protobuf.GeneratedMessage
       implements FlumeEventOrBuilder {
     // Use FlumeEvent.newBuilder() to construct.
-    private FlumeEvent(Builder builder) {
+    private FlumeEvent(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private FlumeEvent(boolean noInit) {}
+    private FlumeEvent(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final FlumeEvent defaultInstance;
     public static FlumeEvent getDefaultInstance() {
@@ -4878,6 +6089,63 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private FlumeEvent(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                headers_ = new java.util.ArrayList<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              headers_.add(input.readMessage(org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.PARSER, extensionRegistry));
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000001;
+              body_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          headers_ = java.util.Collections.unmodifiableList(headers_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEvent_descriptor;
@@ -4885,26 +6153,58 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEvent_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEvent_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.class, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<FlumeEvent> PARSER =
+        new com.google.protobuf.AbstractParser<FlumeEvent>() {
+      public FlumeEvent parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new FlumeEvent(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<FlumeEvent> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // repeated .FlumeEventHeader headers = 1;
     public static final int HEADERS_FIELD_NUMBER = 1;
     private java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader> headers_;
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader> getHeadersList() {
       return headers_;
     }
-    public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder>
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
+    public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder> 
         getHeadersOrBuilderList() {
       return headers_;
     }
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     public int getHeadersCount() {
       return headers_.size();
     }
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader getHeaders(int index) {
       return headers_.get(index);
     }
+    /**
+     * <code>repeated .FlumeEventHeader headers = 1;</code>
+     */
     public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder getHeadersOrBuilder(
         int index) {
       return headers_.get(index);
@@ -4913,9 +6213,15 @@ public final class ProtosFactory {
     // required bytes body = 2;
     public static final int BODY_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString body_;
+    /**
+     * <code>required bytes body = 2;</code>
+     */
     public boolean hasBody() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required bytes body = 2;</code>
+     */
     public com.google.protobuf.ByteString getBody() {
       return body_;
     }
@@ -4984,68 +6290,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -5061,6 +6353,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code FlumeEvent}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventOrBuilder {
@@ -5071,7 +6366,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEvent_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEvent_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.class, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.newBuilder()
@@ -5079,7 +6376,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -5111,7 +6409,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEvent_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent getDefaultInstanceForType() {
@@ -5122,16 +6420,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -5187,7 +6475,7 @@ public final class ProtosFactory {
               headersBuilder_ = null;
               headers_ = other.headers_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              headersBuilder_ =
+              headersBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getHeadersFieldBuilder() : null;
             } else {
@@ -5204,12 +6492,12 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasBody()) {
-
+          
           return false;
         }
         for (int i = 0; i < getHeadersCount(); i++) {
           if (!getHeaders(i).isInitialized()) {
-
+            
             return false;
           }
         }
@@ -5220,40 +6508,19 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder subBuilder = org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addHeaders(subBuilder.buildPartial());
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              body_ = input.readBytes();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // repeated .FlumeEventHeader headers = 1;
@@ -5269,6 +6536,9 @@ public final class ProtosFactory {
       private com.google.protobuf.RepeatedFieldBuilder<
           org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder> headersBuilder_;
 
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader> getHeadersList() {
         if (headersBuilder_ == null) {
           return java.util.Collections.unmodifiableList(headers_);
@@ -5276,6 +6546,9 @@ public final class ProtosFactory {
           return headersBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public int getHeadersCount() {
         if (headersBuilder_ == null) {
           return headers_.size();
@@ -5283,6 +6556,9 @@ public final class ProtosFactory {
           return headersBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader getHeaders(int index) {
         if (headersBuilder_ == null) {
           return headers_.get(index);
@@ -5290,6 +6566,9 @@ public final class ProtosFactory {
           return headersBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder setHeaders(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader value) {
         if (headersBuilder_ == null) {
@@ -5304,6 +6583,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder setHeaders(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder builderForValue) {
         if (headersBuilder_ == null) {
@@ -5315,6 +6597,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder addHeaders(org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader value) {
         if (headersBuilder_ == null) {
           if (value == null) {
@@ -5328,6 +6613,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder addHeaders(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader value) {
         if (headersBuilder_ == null) {
@@ -5342,6 +6630,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder addHeaders(
           org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder builderForValue) {
         if (headersBuilder_ == null) {
@@ -5353,6 +6644,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder addHeaders(
           int index, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder builderForValue) {
         if (headersBuilder_ == null) {
@@ -5364,6 +6658,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder addAllHeaders(
           java.lang.Iterable<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader> values) {
         if (headersBuilder_ == null) {
@@ -5375,6 +6672,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder clearHeaders() {
         if (headersBuilder_ == null) {
           headers_ = java.util.Collections.emptyList();
@@ -5385,6 +6685,9 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public Builder removeHeaders(int index) {
         if (headersBuilder_ == null) {
           ensureHeadersIsMutable();
@@ -5395,10 +6698,16 @@ public final class ProtosFactory {
         }
         return this;
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder getHeadersBuilder(
           int index) {
         return getHeadersFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder getHeadersOrBuilder(
           int index) {
         if (headersBuilder_ == null) {
@@ -5406,7 +6715,10 @@ public final class ProtosFactory {
           return headersBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder>
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
+      public java.util.List<? extends org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder> 
            getHeadersOrBuilderList() {
         if (headersBuilder_ != null) {
           return headersBuilder_.getMessageOrBuilderList();
@@ -5414,21 +6726,30 @@ public final class ProtosFactory {
           return java.util.Collections.unmodifiableList(headers_);
         }
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder addHeadersBuilder() {
         return getHeadersFieldBuilder().addBuilder(
             org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.getDefaultInstance());
       }
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder addHeadersBuilder(
           int index) {
         return getHeadersFieldBuilder().addBuilder(
             index, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.getDefaultInstance());
       }
-      public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder>
+      /**
+       * <code>repeated .FlumeEventHeader headers = 1;</code>
+       */
+      public java.util.List<org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder> 
            getHeadersBuilderList() {
         return getHeadersFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder>
+          org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder> 
           getHeadersFieldBuilder() {
         if (headersBuilder_ == null) {
           headersBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
@@ -5444,12 +6765,21 @@ public final class ProtosFactory {
 
       // required bytes body = 2;
       private com.google.protobuf.ByteString body_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes body = 2;</code>
+       */
       public boolean hasBody() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required bytes body = 2;</code>
+       */
       public com.google.protobuf.ByteString getBody() {
         return body_;
       }
+      /**
+       * <code>required bytes body = 2;</code>
+       */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -5459,6 +6789,9 @@ public final class ProtosFactory {
         onChanged();
         return this;
       }
+      /**
+       * <code>required bytes body = 2;</code>
+       */
       public Builder clearBody() {
         bitField0_ = (bitField0_ & ~0x00000002);
         body_ = getDefaultInstance().getBody();
@@ -5481,21 +6814,47 @@ public final class ProtosFactory {
       extends com.google.protobuf.MessageOrBuilder {
 
     // required string key = 1;
+    /**
+     * <code>required string key = 1;</code>
+     */
     boolean hasKey();
-    String getKey();
+    /**
+     * <code>required string key = 1;</code>
+     */
+    java.lang.String getKey();
+    /**
+     * <code>required string key = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getKeyBytes();
 
     // required string value = 2;
+    /**
+     * <code>required string value = 2;</code>
+     */
     boolean hasValue();
-    String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    java.lang.String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getValueBytes();
   }
+  /**
+   * Protobuf type {@code FlumeEventHeader}
+   */
   public static final class FlumeEventHeader extends
       com.google.protobuf.GeneratedMessage
       implements FlumeEventHeaderOrBuilder {
     // Use FlumeEventHeader.newBuilder() to construct.
-    private FlumeEventHeader(Builder builder) {
+    private FlumeEventHeader(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private FlumeEventHeader(boolean noInit) {}
+    private FlumeEventHeader(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
     private static final FlumeEventHeader defaultInstance;
     public static FlumeEventHeader getDefaultInstance() {
@@ -5506,6 +6865,57 @@ public final class ProtosFactory {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private FlumeEventHeader(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              key_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              value_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEventHeader_descriptor;
@@ -5513,35 +6923,63 @@ public final class ProtosFactory {
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEventHeader_fieldAccessorTable;
+      return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEventHeader_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.class, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<FlumeEventHeader> PARSER =
+        new com.google.protobuf.AbstractParser<FlumeEventHeader>() {
+      public FlumeEventHeader parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new FlumeEventHeader(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<FlumeEventHeader> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
     // required string key = 1;
     public static final int KEY_FIELD_NUMBER = 1;
     private java.lang.Object key_;
+    /**
+     * <code>required string key = 1;</code>
+     */
     public boolean hasKey() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getKey() {
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public java.lang.String getKey() {
       java.lang.Object ref = key_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           key_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getKeyBytes() {
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getKeyBytes() {
       java.lang.Object ref = key_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         key_ = b;
         return b;
       } else {
@@ -5552,28 +6990,39 @@ public final class ProtosFactory {
     // required string value = 2;
     public static final int VALUE_FIELD_NUMBER = 2;
     private java.lang.Object value_;
+    /**
+     * <code>required string value = 2;</code>
+     */
     public boolean hasValue() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getValue() {
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public java.lang.String getValue() {
       java.lang.Object ref = value_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           value_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getValueBytes() {
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getValueBytes() {
       java.lang.Object ref = value_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         value_ = b;
         return b;
       } else {
@@ -5643,68 +7092,54 @@ public final class ProtosFactory {
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
 
     public static Builder newBuilder() { return Builder.create(); }
@@ -5720,6 +7155,9 @@ public final class ProtosFactory {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code FlumeEventHeader}
+     */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeaderOrBuilder {
@@ -5730,7 +7168,9 @@ public final class ProtosFactory {
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEventHeader_fieldAccessorTable;
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEventHeader_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.class, org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder.class);
       }
 
       // Construct using org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.newBuilder()
@@ -5738,7 +7178,8 @@ public final class ProtosFactory {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -5765,7 +7206,7 @@ public final class ProtosFactory {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.getDescriptor();
+        return org.apache.flume.channel.file.proto.ProtosFactory.internal_static_FlumeEventHeader_descriptor;
       }
 
       public org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader getDefaultInstanceForType() {
@@ -5776,16 +7217,6 @@ public final class ProtosFactory {
         org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      private org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
         }
         return result;
       }
@@ -5819,10 +7250,14 @@ public final class ProtosFactory {
       public Builder mergeFrom(org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader other) {
         if (other == org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.getDefaultInstance()) return this;
         if (other.hasKey()) {
-          setKey(other.getKey());
+          bitField0_ |= 0x00000001;
+          key_ = other.key_;
+          onChanged();
         }
         if (other.hasValue()) {
-          setValue(other.getValue());
+          bitField0_ |= 0x00000002;
+          value_ = other.value_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -5830,11 +7265,11 @@ public final class ProtosFactory {
 
       public final boolean isInitialized() {
         if (!hasKey()) {
-
+          
           return false;
         }
         if (!hasValue()) {
-
+          
           return false;
         }
         return true;
@@ -5844,57 +7279,64 @@ public final class ProtosFactory {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              key_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              value_ = input.readBytes();
-              break;
-            }
+        org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-
       private int bitField0_;
 
       // required string key = 1;
       private java.lang.Object key_ = "";
+      /**
+       * <code>required string key = 1;</code>
+       */
       public boolean hasKey() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getKey() {
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public java.lang.String getKey() {
         java.lang.Object ref = key_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           key_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setKey(String value) {
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getKeyBytes() {
+        java.lang.Object ref = key_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          key_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder setKey(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -5903,34 +7345,72 @@ public final class ProtosFactory {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string key = 1;</code>
+       */
       public Builder clearKey() {
         bitField0_ = (bitField0_ & ~0x00000001);
         key_ = getDefaultInstance().getKey();
         onChanged();
         return this;
       }
-      void setKey(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder setKeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
         onChanged();
+        return this;
       }
 
       // required string value = 2;
       private java.lang.Object value_ = "";
+      /**
+       * <code>required string value = 2;</code>
+       */
       public boolean hasValue() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getValue() {
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public java.lang.String getValue() {
         java.lang.Object ref = value_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
           value_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setValue(String value) {
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getValueBytes() {
+        java.lang.Object ref = value_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          value_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValue(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -5939,16 +7419,27 @@ public final class ProtosFactory {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string value = 2;</code>
+       */
       public Builder clearValue() {
         bitField0_ = (bitField0_ & ~0x00000002);
         value_ = getDefaultInstance().getValue();
         onChanged();
         return this;
       }
-      void setValue(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         value_ = value;
         onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:FlumeEventHeader)
@@ -6045,15 +7536,15 @@ public final class ProtosFactory {
       "\n\016cipherProvider\030\001 \002(\t\022\020\n\010keyAlias\030\002 \002(\t" +
       "\022\022\n\nparameters\030\003 \001(\014\"S\n\026TransactionEvent" +
       "Header\022\014\n\004type\030\001 \002(\017\022\025\n\rtransactionID\030\002 " +
-      "\002(\020\022\024\n\014writeOrderID\030\003 \002(\020\"!\n\003Put\022\032\n\005even" +
-      "t\030\001 \002(\0132\013.FlumeEvent\"&\n\004Take\022\016\n\006fileID\030\001" +
-      " \002(\017\022\016\n\006offset\030\002 \002(\017\"\n\n\010Rollback\"\026\n\006Comm" +
-      "it\022\014\n\004type\030\001 \002(\017\"\030\n\026TransactionEventFoot" +
-      "er\">\n\nFlumeEvent\022\"\n\007headers\030\001 \003(\0132\021.Flum" +
-      "eEventHeader\022\014\n\004body\030\002 \002(\014\".\n\020FlumeEvent",
-      "Header\022\013\n\003key\030\001 \002(\t\022\r\n\005value\030\002 \002(\tB4\n#or" +
-      "g.apache.flume.channel.file.protoB\rProto" +
-      "sFactory"
+      "\002(\020\022\024\n\014writeOrderID\030\003 \002(\020\"3\n\003Put\022\032\n\005even" +
+      "t\030\001 \002(\0132\013.FlumeEvent\022\020\n\010checksum\030\002 \001(\020\"&" +
+      "\n\004Take\022\016\n\006fileID\030\001 \002(\017\022\016\n\006offset\030\002 \002(\017\"\n" +
+      "\n\010Rollback\"\026\n\006Commit\022\014\n\004type\030\001 \002(\017\"\030\n\026Tr" +
+      "ansactionEventFooter\">\n\nFlumeEvent\022\"\n\007he" +
+      "aders\030\001 \003(\0132\021.FlumeEventHeader\022\014\n\004body\030\002",
+      " \002(\014\".\n\020FlumeEventHeader\022\013\n\003key\030\001 \002(\t\022\r\n" +
+      "\005value\030\002 \002(\tB4\n#org.apache.flume.channel" +
+      ".file.protoB\rProtosFactory"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -6065,97 +7556,73 @@ public final class ProtosFactory {
           internal_static_Checkpoint_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Checkpoint_descriptor,
-              new java.lang.String[] { "Version", "WriteOrderID", "QueueSize", "QueueHead", "ActiveLogs", },
-              org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.Checkpoint.Builder.class);
+              new java.lang.String[] { "Version", "WriteOrderID", "QueueSize", "QueueHead", "ActiveLogs", });
           internal_static_ActiveLog_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_ActiveLog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ActiveLog_descriptor,
-              new java.lang.String[] { "LogFileID", "Count", },
-              org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.ActiveLog.Builder.class);
+              new java.lang.String[] { "LogFileID", "Count", });
           internal_static_LogFileMetaData_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_LogFileMetaData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_LogFileMetaData_descriptor,
-              new java.lang.String[] { "Version", "LogFileID", "CheckpointPosition", "CheckpointWriteOrderID", "Encryption", "BackupCheckpointPosition", "BackupCheckpointWriteOrderID", },
-              org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.LogFileMetaData.Builder.class);
+              new java.lang.String[] { "Version", "LogFileID", "CheckpointPosition", "CheckpointWriteOrderID", "Encryption", "BackupCheckpointPosition", "BackupCheckpointWriteOrderID", });
           internal_static_LogFileEncryption_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_LogFileEncryption_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_LogFileEncryption_descriptor,
-              new java.lang.String[] { "CipherProvider", "KeyAlias", "Parameters", },
-              org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.LogFileEncryption.Builder.class);
+              new java.lang.String[] { "CipherProvider", "KeyAlias", "Parameters", });
           internal_static_TransactionEventHeader_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_TransactionEventHeader_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_TransactionEventHeader_descriptor,
-              new java.lang.String[] { "Type", "TransactionID", "WriteOrderID", },
-              org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventHeader.Builder.class);
+              new java.lang.String[] { "Type", "TransactionID", "WriteOrderID", });
           internal_static_Put_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_Put_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Put_descriptor,
-              new java.lang.String[] { "Event", },
-              org.apache.flume.channel.file.proto.ProtosFactory.Put.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.Put.Builder.class);
+              new java.lang.String[] { "Event", "Checksum", });
           internal_static_Take_descriptor =
             getDescriptor().getMessageTypes().get(6);
           internal_static_Take_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Take_descriptor,
-              new java.lang.String[] { "FileID", "Offset", },
-              org.apache.flume.channel.file.proto.ProtosFactory.Take.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.Take.Builder.class);
+              new java.lang.String[] { "FileID", "Offset", });
           internal_static_Rollback_descriptor =
             getDescriptor().getMessageTypes().get(7);
           internal_static_Rollback_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Rollback_descriptor,
-              new java.lang.String[] { },
-              org.apache.flume.channel.file.proto.ProtosFactory.Rollback.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.Rollback.Builder.class);
+              new java.lang.String[] { });
           internal_static_Commit_descriptor =
             getDescriptor().getMessageTypes().get(8);
           internal_static_Commit_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Commit_descriptor,
-              new java.lang.String[] { "Type", },
-              org.apache.flume.channel.file.proto.ProtosFactory.Commit.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.Commit.Builder.class);
+              new java.lang.String[] { "Type", });
           internal_static_TransactionEventFooter_descriptor =
             getDescriptor().getMessageTypes().get(9);
           internal_static_TransactionEventFooter_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_TransactionEventFooter_descriptor,
-              new java.lang.String[] { },
-              org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.TransactionEventFooter.Builder.class);
+              new java.lang.String[] { });
           internal_static_FlumeEvent_descriptor =
             getDescriptor().getMessageTypes().get(10);
           internal_static_FlumeEvent_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_FlumeEvent_descriptor,
-              new java.lang.String[] { "Headers", "Body", },
-              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEvent.Builder.class);
+              new java.lang.String[] { "Headers", "Body", });
           internal_static_FlumeEventHeader_descriptor =
             getDescriptor().getMessageTypes().get(11);
           internal_static_FlumeEventHeader_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_FlumeEventHeader_descriptor,
-              new java.lang.String[] { "Key", "Value", },
-              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.class,
-              org.apache.flume.channel.file.proto.ProtosFactory.FlumeEventHeader.Builder.class);
+              new java.lang.String[] { "Key", "Value", });
           return null;
         }
       };

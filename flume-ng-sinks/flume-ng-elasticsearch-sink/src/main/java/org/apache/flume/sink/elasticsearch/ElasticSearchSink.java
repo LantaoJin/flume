@@ -23,7 +23,6 @@ import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.CLU
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_CLUSTER_NAME;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_NAME;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_TYPE;
-import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_PORT;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_TTL;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.HOSTNAMES;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME;
@@ -31,10 +30,7 @@ import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.IND
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.SERIALIZER;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.SERIALIZER_PREFIX;
 import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.TTL;
-
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.TTL_REGEX;
 import org.apache.commons.lang.StringUtils;
 import org.apache.flume.Channel;
 import org.apache.flume.Context;
@@ -42,19 +38,12 @@ import org.apache.flume.CounterGroup;
 import org.apache.flume.Event;
 import org.apache.flume.EventDeliveryException;
 import org.apache.flume.Transaction;
+import org.apache.flume.formatter.output.BucketPath;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.instrumentation.SinkCounter;
 import org.apache.flume.sink.AbstractSink;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.apache.flume.sink.elasticsearch.client.ElasticSearchClient;
+import org.apache.flume.sink.elasticsearch.client.ElasticSearchClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,22 +51,33 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.CLIENT_PREFIX;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.CLIENT_TYPE;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_CLIENT_TYPE;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_INDEX_NAME_BUILDER_CLASS;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.DEFAULT_SERIALIZER_CLASS;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME_BUILDER;
+import static org.apache.flume.sink.elasticsearch.ElasticSearchSinkConstants.INDEX_NAME_BUILDER_PREFIX;
+
 /**
  * A sink which reads events from a channel and writes them to ElasticSearch
  * based on the work done by https://github.com/Aconex/elasticflume.git.</p>
- *
+ * 
  * This sink supports batch reading of events from the channel and writing them
  * to ElasticSearch.</p>
- *
+ * 
  * Indexes will be rolled daily using the format 'indexname-YYYY-MM-dd' to allow
  * easier management of the index</p>
- *
+ * 
  * This sink must be configured with with mandatory parameters detailed in
- * {@link ElasticSearchSinkConstants}</p>
- * It is recommended as a secondary step the ElasticSearch indexes are optimized
- * for the specified serializer. This is not handled by the sink but is
- * typically done by deploying a config template alongside the ElasticSearch
- * deploy</p>
+ * {@link ElasticSearchSinkConstants}</p> It is recommended as a secondary step
+ * the ElasticSearch indexes are optimized for the specified serializer. This is
+ * not handled by the sink but is typically done by deploying a config template
+ * alongside the ElasticSearch deploy</p>
+ * 
  * @see http
  *      ://www.elasticsearch.org/guide/reference/api/admin-indices-templates.
  *      html
@@ -98,12 +98,19 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
   private String clusterName = DEFAULT_CLUSTER_NAME;
   private String indexName = DEFAULT_INDEX_NAME;
   private String indexType = DEFAULT_INDEX_TYPE;
+  private String clientType = DEFAULT_CLIENT_TYPE;
+  private final Pattern pattern = Pattern.compile(TTL_REGEX,
+      Pattern.CASE_INSENSITIVE);
+  private Matcher matcher = pattern.matcher("");
 
-  private InetSocketTransportAddress[] serverAddresses;
+  private String[] serverAddresses = null;
 
-  private Node node;
-  private Client client;
+  private ElasticSearchClient client = null;
+  private Context elasticSearchClientContext = null;
+
   private ElasticSearchIndexRequestBuilderFactory indexRequestFactory;
+  private ElasticSearchEventSerializer eventSerializer;
+  private IndexNameBuilder indexNameBuilder;
   private SinkCounter sinkCounter;
 
   /**
@@ -116,12 +123,12 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
   /**
    * Create an {@link ElasticSearchSink}</p>
-   *
+   * 
    * @param isLocal
    *          If <tt>true</tt> sink will be configured to only talk to an
    *          ElasticSearch instance hosted in the same JVM, should always be
    *          false is production
-   *
+   * 
    */
   @VisibleForTesting
   ElasticSearchSink(boolean isLocal) {
@@ -129,7 +136,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
   }
 
   @VisibleForTesting
-  InetSocketTransportAddress[] getServerAddresses() {
+  String[] getServerAddresses() {
     return serverAddresses;
   }
 
@@ -153,6 +160,16 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     return ttlMs;
   }
 
+  @VisibleForTesting
+  ElasticSearchEventSerializer getEventSerializer() {
+    return eventSerializer;
+  }
+
+  @VisibleForTesting
+  IndexNameBuilder getIndexNameBuilder() {
+    return indexNameBuilder;
+  }
+
   @Override
   public Status process() throws EventDeliveryException {
     logger.debug("processing...");
@@ -161,47 +178,34 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     Transaction txn = channel.getTransaction();
     try {
       txn.begin();
-      BulkRequestBuilder bulkRequest = client.prepareBulk();
-      for (int i = 0; i < batchSize; i++) {
+      int count;
+      for (count = 0; count < batchSize; ++count) {
         Event event = channel.take();
 
         if (event == null) {
           break;
         }
-
-        IndexRequestBuilder indexRequest =
-            indexRequestFactory.createIndexRequest(
-                client, indexName, indexType, event);
-
-        if (ttlMs > 0) {
-          indexRequest.setTTL(ttlMs);
-        }
-
-        bulkRequest.add(indexRequest);
+        String realIndexType = BucketPath.escapeString(indexType, event.getHeaders());
+        client.addEvent(event, indexNameBuilder, realIndexType, ttlMs);
       }
 
-      int size = bulkRequest.numberOfActions();
-      if (size <= 0) {
+      if (count <= 0) {
         sinkCounter.incrementBatchEmptyCount();
         counterGroup.incrementAndGet("channel.underflow");
         status = Status.BACKOFF;
       } else {
-        if (size < batchSize) {
+        if (count < batchSize) {
           sinkCounter.incrementBatchUnderflowCount();
           status = Status.BACKOFF;
         } else {
           sinkCounter.incrementBatchCompleteCount();
         }
 
-        sinkCounter.addToEventDrainAttemptCount(size);
-
-        BulkResponse bulkResponse = bulkRequest.execute().actionGet();
-        if (bulkResponse.hasFailures()) {
-          throw new EventDeliveryException(bulkResponse.buildFailureMessage());
-        }
+        sinkCounter.addToEventDrainAttemptCount(count);
+        client.execute();
       }
       txn.commit();
-      sinkCounter.addToEventDrainSuccessCount(size);
+      sinkCounter.addToEventDrainSuccessCount(count);
       counterGroup.incrementAndGet("transaction.success");
     } catch (Throwable ex) {
       try {
@@ -232,22 +236,10 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
   @Override
   public void configure(Context context) {
     if (!isLocal) {
-      String[] hostNames = null;
       if (StringUtils.isNotBlank(context.getString(HOSTNAMES))) {
-        hostNames = context.getString(HOSTNAMES).split(",");
+        serverAddresses = StringUtils.deleteWhitespace(
+            context.getString(HOSTNAMES)).split(",");
       }
-      Preconditions.checkState(hostNames != null && hostNames.length > 0,
-          "Missing Param:" + HOSTNAMES);
-
-      serverAddresses = new InetSocketTransportAddress[hostNames.length];
-      for (int i = 0; i < hostNames.length; i++) {
-        String[] hostPort = hostNames[i].split(":");
-        String host = hostPort[0];
-        int port = hostPort.length == 2 ? Integer.parseInt(hostPort[1])
-            : DEFAULT_PORT;
-        serverAddresses[i] = new InetSocketTransportAddress(host, port);
-      }
-
       Preconditions.checkState(serverAddresses != null
           && serverAddresses.length > 0, "Missing Param:" + HOSTNAMES);
     }
@@ -269,13 +261,19 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     }
 
     if (StringUtils.isNotBlank(context.getString(TTL))) {
-      this.ttlMs = TimeUnit.DAYS.toMillis(Integer.parseInt(context
-          .getString(TTL)));
+      this.ttlMs = parseTTL(context.getString(TTL));
       Preconditions.checkState(ttlMs > 0, TTL
           + " must be greater than 0 or not set.");
     }
 
-    String serializerClazz = "org.apache.flume.sink.elasticsearch.ElasticSearchLogStashEventSerializer";
+    if (StringUtils.isNotBlank(context.getString(CLIENT_TYPE))) {
+      clientType = context.getString(CLIENT_TYPE);
+    }
+
+    elasticSearchClientContext = new Context();
+    elasticSearchClientContext.putAll(context.getSubProperties(CLIENT_PREFIX));
+
+    String serializerClazz = DEFAULT_SERIALIZER_CLASS;
     if (StringUtils.isNotBlank(context.getString(SERIALIZER))) {
       serializerClazz = context.getString(SERIALIZER);
     }
@@ -288,19 +286,46 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
       Class<? extends Configurable> clazz = (Class<? extends Configurable>) Class
           .forName(serializerClazz);
       Configurable serializer = clazz.newInstance();
+
       if (serializer instanceof ElasticSearchIndexRequestBuilderFactory) {
-        indexRequestFactory = (ElasticSearchIndexRequestBuilderFactory) serializer;
-      } else if (serializer instanceof ElasticSearchEventSerializer){
-        indexRequestFactory = new EventSerializerIndexRequestBuilderFactory(
-            (ElasticSearchEventSerializer) serializer);
+        indexRequestFactory
+            = (ElasticSearchIndexRequestBuilderFactory) serializer;
+        indexRequestFactory.configure(serializerContext);
+      } else if (serializer instanceof ElasticSearchEventSerializer) {
+        eventSerializer = (ElasticSearchEventSerializer) serializer;
+        eventSerializer.configure(serializerContext);
       } else {
-          throw new IllegalArgumentException(
-              serializerClazz + " is neither an ElasticSearchEventSerializer"
-              + " nor an ElasticSearchIndexRequestBuilderFactory.");
+        throw new IllegalArgumentException(serializerClazz
+            + " is not an ElasticSearchEventSerializer");
       }
-      indexRequestFactory.configure(serializerContext);
     } catch (Exception e) {
       logger.error("Could not instantiate event serializer.", e);
+      Throwables.propagate(e);
+    }
+
+    if (sinkCounter == null) {
+      sinkCounter = new SinkCounter(getName());
+    }
+
+    String indexNameBuilderClass = DEFAULT_INDEX_NAME_BUILDER_CLASS;
+    if (StringUtils.isNotBlank(context.getString(INDEX_NAME_BUILDER))) {
+      indexNameBuilderClass = context.getString(INDEX_NAME_BUILDER);
+    }
+
+    Context indexnameBuilderContext = new Context();
+    serializerContext.putAll(
+            context.getSubProperties(INDEX_NAME_BUILDER_PREFIX));
+
+    try {
+      @SuppressWarnings("unchecked")
+      Class<? extends IndexNameBuilder> clazz
+              = (Class<? extends IndexNameBuilder>) Class
+              .forName(indexNameBuilderClass);
+      indexNameBuilder = clazz.newInstance();
+      indexnameBuilderContext.put(INDEX_NAME, indexName);
+      indexNameBuilder.configure(indexnameBuilderContext);
+    } catch (Exception e) {
+      logger.error("Could not instantiate index name builder.", e);
       Throwables.propagate(e);
     }
 
@@ -320,13 +345,27 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
   @Override
   public void start() {
+    ElasticSearchClientFactory clientFactory = new ElasticSearchClientFactory();
+
     logger.info("ElasticSearch sink {} started");
     sinkCounter.start();
     try {
-      openConnection();
+      if (isLocal) {
+        client = clientFactory.getLocalClient(
+            clientType, eventSerializer, indexRequestFactory);
+      } else {
+        client = clientFactory.getClient(clientType, serverAddresses,
+            clusterName, eventSerializer, indexRequestFactory);
+        client.configure(elasticSearchClientContext);
+      }
+      sinkCounter.incrementConnectionCreatedCount();
     } catch (Exception ex) {
+      ex.printStackTrace();
       sinkCounter.incrementConnectionFailedCount();
-      closeConnection();
+      if (client != null) {
+        client.close();
+        sinkCounter.incrementConnectionClosedCount();
+      }
     }
 
     super.start();
@@ -335,57 +374,54 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
   @Override
   public void stop() {
     logger.info("ElasticSearch sink {} stopping");
-    closeConnection();
-
+    if (client != null) {
+      client.close();
+    }
+    sinkCounter.incrementConnectionClosedCount();
     sinkCounter.stop();
     super.stop();
   }
 
-  private void openConnection() {
-    if (isLocal) {
-      logger.info("Using ElasticSearch AutoDiscovery mode");
-      openLocalDiscoveryClient();
-    } else {
-      logger.info("Using ElasticSearch hostnames: {} ",
-          Arrays.toString(serverAddresses));
-      openClient();
-    }
-    sinkCounter.incrementConnectionCreatedCount();
-  }
-
   /*
-   * FOR TESTING ONLY...
-   *
-   * Opens a local discovery node for talking to an elasticsearch server running
-   * in the same JVM
+   * Returns TTL value of ElasticSearch index in milliseconds when TTL specifier
+   * is "ms" / "s" / "m" / "h" / "d" / "w". In case of unknown specifier TTL is
+   * not set. When specifier is not provided it defaults to days in milliseconds
+   * where the number of days is parsed integer from TTL string provided by
+   * user. <p> Elasticsearch supports ttl values being provided in the format:
+   * 1d / 1w / 1ms / 1s / 1h / 1m specify a time unit like d (days), m
+   * (minutes), h (hours), ms (milliseconds) or w (weeks), milliseconds is used
+   * as default unit.
+   * http://www.elasticsearch.org/guide/reference/mapping/ttl-field/.
+   * 
+   * @param ttl TTL value provided by user in flume configuration file for the
+   * sink
+   * 
+   * @return the ttl value in milliseconds
    */
-  private void openLocalDiscoveryClient() {
-    node = NodeBuilder.nodeBuilder().client(true).local(true).node();
-    client = node.client();
-  }
-
-  private void openClient() {
-    Settings settings = ImmutableSettings.settingsBuilder()
-        .put("cluster.name", clusterName).build();
-
-    TransportClient transport = new TransportClient(settings);
-    for (InetSocketTransportAddress host : serverAddresses) {
-      transport.addTransportAddress(host);
+  private long parseTTL(String ttl) {
+    matcher = matcher.reset(ttl);
+    while (matcher.find()) {
+      if (matcher.group(2).equals("ms")) {
+        return Long.parseLong(matcher.group(1));
+      } else if (matcher.group(2).equals("s")) {
+        return TimeUnit.SECONDS.toMillis(Integer.parseInt(matcher.group(1)));
+      } else if (matcher.group(2).equals("m")) {
+        return TimeUnit.MINUTES.toMillis(Integer.parseInt(matcher.group(1)));
+      } else if (matcher.group(2).equals("h")) {
+        return TimeUnit.HOURS.toMillis(Integer.parseInt(matcher.group(1)));
+      } else if (matcher.group(2).equals("d")) {
+        return TimeUnit.DAYS.toMillis(Integer.parseInt(matcher.group(1)));
+      } else if (matcher.group(2).equals("w")) {
+        return TimeUnit.DAYS.toMillis(7 * Integer.parseInt(matcher.group(1)));
+      } else if (matcher.group(2).equals("")) {
+        logger.info("TTL qualifier is empty. Defaulting to day qualifier.");
+        return TimeUnit.DAYS.toMillis(Integer.parseInt(matcher.group(1)));
+      } else {
+        logger.debug("Unknown TTL qualifier provided. Setting TTL to 0.");
+        return 0;
+      }
     }
-    client = transport;
-  }
-
-  private void closeConnection() {
-    if (client != null) {
-      client.close();
-    }
-    client = null;
-
-    if (node != null) {
-      node.close();
-    }
-    node = null;
-
-    sinkCounter.incrementConnectionClosedCount();
+    logger.info("TTL not provided. Skipping the TTL config by returning 0.");
+    return 0;
   }
 }

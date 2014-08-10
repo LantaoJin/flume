@@ -39,7 +39,7 @@ public class FileChannelConfiguration {
    * Maximum number of put/take events in a transaction. Default: 1000
    */
   public static final String TRANSACTION_CAPACITY = "transactionCapacity";
-  public static final int DEFAULT_TRANSACTION_CAPACITY = 1000;
+  public static final int DEFAULT_TRANSACTION_CAPACITY = 10000;
   /**
    * Interval at which checkpoints should be taken. Default 30s (ms)
    */
@@ -76,19 +76,6 @@ public class FileChannelConfiguration {
   public static final int DEFAULT_KEEP_ALIVE = 3;
 
   /**
-   * The amount of time in seconds a writer will wait before failing when
-   * checkpoint is enqueued or in progress.
-   */
-  public static final String LOG_WRITE_TIMEOUT = "write-timeout";
-  public static final int DEFAULT_WRITE_TIMEOUT = 10;
-
-  /**
-   * The amount of time in seconds the channel should wait to write the
-   * checkpoint when some other operation(s) are enqueued or in progress.
-   */
-  public static final String CHECKPOINT_WRITE_TIMEOUT = "checkpoint-timeout";
-  public static final int DEFAULT_CHECKPOINT_WRITE_TIMEOUT = 600;
-  /**
    * Turn on Flume 1.2 log replay logic
    */
   public static final String USE_LOG_REPLAY_V1 = "use-log-replay-v1";
@@ -99,5 +86,17 @@ public class FileChannelConfiguration {
 
   public static final String USE_DUAL_CHECKPOINTS = "useDualCheckpoints";
   public static final boolean DEFAULT_USE_DUAL_CHECKPOINTS = false;
+
+  public static final String COMPRESS_BACKUP_CHECKPOINT =
+    "compressBackupCheckpoint";
+  public static final boolean DEFAULT_COMPRESS_BACKUP_CHECKPOINT
+    = false;
+
+  public static final String FSYNC_PER_TXN = "fsyncPerTransaction";
+  public static final boolean DEFAULT_FSYNC_PRE_TXN = true;
+
+  public static final String FSYNC_INTERVAL = "fsyncInterval";
+  public static final int DEFAULT_FSYNC_INTERVAL = 5; // seconds.
+
 
 }

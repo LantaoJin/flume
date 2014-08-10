@@ -23,7 +23,7 @@ limitations under the License.
   <parent>
     <artifactId>flume-parent</artifactId>
     <groupId>org.apache.flume</groupId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.flume</groupId>
@@ -43,6 +43,6 @@ limitations under the License.
   <modules>
     <module>flume-jdbc-channel</module>
     <module>flume-file-channel</module>
-    <module>flume-recoverable-memory-channel</module>
+    <module>flume-spillable-memory-channel</module>
   </modules>
 </project>

@@ -19,14 +19,13 @@
 
 package org.apache.flume.client.avro;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.regex.Pattern;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.FlumeException;
@@ -34,14 +33,18 @@ import org.apache.flume.annotations.InterfaceAudience;
 import org.apache.flume.annotations.InterfaceStability;
 import org.apache.flume.serialization.*;
 import org.apache.flume.source.SpoolDirectorySourceConfigurationConstants;
+import org.apache.flume.source.SpoolDirectorySourceConfigurationConstants.ConsumeOrder;
 import org.apache.flume.tools.PlatformDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * <p/>A {@link ReliableEventReader} which reads log data from files stored
@@ -83,10 +86,14 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
   private final Pattern ignorePattern;
   private final File metaFile;
   private final boolean annotateFileName;
+  private final boolean annotateBaseName;
   private final String fileNameHeader;
+  private final String baseNameHeader;
   private final String deletePolicy;
   private final Charset inputCharset;
-
+  private final DecodeErrorPolicy decodeErrorPolicy;
+  private final ConsumeOrder consumeOrder;    
+  
   private Optional<FileInfo> currentFile = Optional.absent();
   /** Always contains the last file from which lines have been read. **/
   private Optional<FileInfo> lastFileRead = Optional.absent();
@@ -98,8 +105,11 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
   private ReliableSpoolingFileEventReader(File spoolDirectory,
       String completedSuffix, String ignorePattern, String trackerDirPath,
       boolean annotateFileName, String fileNameHeader,
+      boolean annotateBaseName, String baseNameHeader,
       String deserializerType, Context deserializerContext,
-      String deletePolicy, String inputCharset) throws IOException {
+      String deletePolicy, String inputCharset,
+      DecodeErrorPolicy decodeErrorPolicy, 
+      ConsumeOrder consumeOrder) throws IOException {
 
     // Sanity checks
     Preconditions.checkNotNull(spoolDirectory);
@@ -133,12 +143,15 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
 
     // Do a canary test to make sure we have access to spooling directory
     try {
-      File f1 = File.createTempFile("flume", "test", spoolDirectory);
-      Files.write("testing flume file permissions\n", f1, Charsets.UTF_8);
-      Files.readLines(f1, Charsets.UTF_8);
-      if (!f1.delete()) {
-        throw new IOException("Unable to delete canary file " + f1);
+      File canary = File.createTempFile("flume-spooldir-perm-check-", ".canary",
+          spoolDirectory);
+      Files.write("testing flume file permissions\n", canary, Charsets.UTF_8);
+      List<String> lines = Files.readLines(canary, Charsets.UTF_8);
+      Preconditions.checkState(!lines.isEmpty(), "Empty canary file %s", canary);
+      if (!canary.delete()) {
+        throw new IOException("Unable to delete canary file " + canary);
       }
+      logger.debug("Successfully created and deleted canary file: {}", canary);
     } catch (IOException e) {
       throw new FlumeException("Unable to read and modify files" +
           " in the spooling directory: " + spoolDirectory, e);
@@ -150,9 +163,13 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
     this.deserializerContext = deserializerContext;
     this.annotateFileName = annotateFileName;
     this.fileNameHeader = fileNameHeader;
+    this.annotateBaseName = annotateBaseName;
+    this.baseNameHeader = baseNameHeader;
     this.ignorePattern = Pattern.compile(ignorePattern);
     this.deletePolicy = deletePolicy;
     this.inputCharset = Charset.forName(inputCharset);
+    this.decodeErrorPolicy = Preconditions.checkNotNull(decodeErrorPolicy);
+    this.consumeOrder = Preconditions.checkNotNull(consumeOrder);    
 
     File trackerDirectory = new File(trackerDirPath);
 
@@ -235,6 +252,13 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
       String filename = currentFile.get().getFile().getAbsolutePath();
       for (Event event : events) {
         event.getHeaders().put(fileNameHeader, filename);
+      }
+    }
+
+    if (annotateBaseName) {
+      String basename = currentFile.get().getFile().getName();
+      for (Event event : events) {
+        event.getHeaders().put(baseNameHeader, basename);
       }
     }
 
@@ -376,9 +400,16 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
   }
 
   /**
-   * Find and open the oldest file in the chosen directory. If two or more
-   * files are equally old, the file name with lower lexicographical value is
-   * returned. If the directory is empty, this will return an absent option.
+   * Returns the next file to be consumed from the chosen directory.
+   * If the directory is empty or the chosen file is not readable,
+   * this will return an absent option.
+   * If the {@link #consumeOrder} variable is {@link ConsumeOrder#OLDEST}
+   * then returns the oldest file. If the {@link #consumeOrder} variable
+   * is {@link ConsumeOrder#YOUNGEST} then returns the youngest file.
+   * If two or more files are equally old/young, then the file name with
+   * lower lexicographical value is returned.
+   * If the {@link #consumeOrder} variable is {@link ConsumeOrder#RANDOM}
+   * then returns any arbitrary file in the directory.
    */
   private Optional<FileInfo> getNextFile() {
     /* Filter to exclude finished or hidden files */
@@ -394,54 +425,84 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
         return true;
       }
     };
-    List<File> candidateFiles = Arrays.asList(spoolDirectory.listFiles(filter));
-    if (candidateFiles.isEmpty()) {
+    List<File> candidateFiles = Arrays.asList(
+      spoolDirectory.listFiles(filter));
+    if (candidateFiles.isEmpty()) { // No matching file in spooling directory.
       return Optional.absent();
-    } else {
-      Collections.sort(candidateFiles, new Comparator<File>() {
-        public int compare(File a, File b) {
-          int timeComparison = new Long(a.lastModified()).compareTo(
-              new Long(b.lastModified()));
-          if (timeComparison != 0) {
-            return timeComparison;
-          }
-          else {
-            return a.getName().compareTo(b.getName());
-          }
+    }
+
+    File selectedFile = candidateFiles.get(0); // Select the first random file.
+    if (consumeOrder == ConsumeOrder.RANDOM) { // Selected file is random.
+      return openFile(selectedFile);
+    } else if (consumeOrder == ConsumeOrder.YOUNGEST) {
+      for (File candidateFile: candidateFiles) {
+        long compare = selectedFile.lastModified() -
+            candidateFile.lastModified();
+        if (compare == 0) { // ts is same pick smallest lexicographically.
+          selectedFile = smallerLexicographical(selectedFile, candidateFile);
+        } else if (compare < 0) { // candidate is younger (cand-ts > selec-ts)
+          selectedFile = candidateFile;
         }
-      });
-      File nextFile = candidateFiles.get(0);
-      try {
-        // roll the meta file, if needed
-        String nextPath = nextFile.getPath();
-        PositionTracker tracker =
-            DurablePositionTracker.getInstance(metaFile, nextPath);
-        if (!tracker.getTarget().equals(nextPath)) {
-          tracker.close();
-          deleteMetaFile();
-          tracker = DurablePositionTracker.getInstance(metaFile, nextPath);
-        }
-
-        // sanity check
-        Preconditions.checkState(tracker.getTarget().equals(nextPath),
-            "Tracker target %s does not equal expected filename %s",
-            tracker.getTarget(), nextPath);
-
-        ResettableInputStream in =
-            new ResettableFileInputStream(nextFile, tracker,
-                ResettableFileInputStream.DEFAULT_BUF_SIZE, inputCharset);
-        EventDeserializer deserializer = EventDeserializerFactory.getInstance
-            (deserializerType, deserializerContext, in);
-
-        return Optional.of(new FileInfo(nextFile, deserializer));
-      } catch (FileNotFoundException e) {
-        // File could have been deleted in the interim
-        logger.warn("Could not find file: " + nextFile, e);
-        return Optional.absent();
-      } catch (IOException e) {
-        logger.error("Exception opening file: " + nextFile, e);
-        return Optional.absent();
       }
+    } else { // default order is OLDEST
+      for (File candidateFile: candidateFiles) {
+        long compare = selectedFile.lastModified() -
+            candidateFile.lastModified();
+        if (compare == 0) { // ts is same pick smallest lexicographically.
+          selectedFile = smallerLexicographical(selectedFile, candidateFile);
+        } else if (compare > 0) { // candidate is older (cand-ts < selec-ts).
+          selectedFile = candidateFile;
+        }
+      }
+    }
+
+    return openFile(selectedFile);
+  }
+
+  private File smallerLexicographical(File f1, File f2) {
+    if (f1.getName().compareTo(f2.getName()) < 0) {
+      return f1;
+    }
+    return f2;
+  }
+  /**
+   * Opens a file for consuming
+   * @param file
+   * @return {@link #FileInfo} for the file to consume or absent option if the
+   * file does not exists or readable.
+   */
+  private Optional<FileInfo> openFile(File file) {    
+    try {
+      // roll the meta file, if needed
+      String nextPath = file.getPath();
+      PositionTracker tracker =
+          DurablePositionTracker.getInstance(metaFile, nextPath);
+      if (!tracker.getTarget().equals(nextPath)) {
+        tracker.close();
+        deleteMetaFile();
+        tracker = DurablePositionTracker.getInstance(metaFile, nextPath);
+      }
+
+      // sanity check
+      Preconditions.checkState(tracker.getTarget().equals(nextPath),
+          "Tracker target %s does not equal expected filename %s",
+          tracker.getTarget(), nextPath);
+
+      ResettableInputStream in =
+          new ResettableFileInputStream(file, tracker,
+              ResettableFileInputStream.DEFAULT_BUF_SIZE, inputCharset,
+              decodeErrorPolicy);
+      EventDeserializer deserializer = EventDeserializerFactory.getInstance
+          (deserializerType, deserializerContext, in);
+
+      return Optional.of(new FileInfo(file, deserializer));
+    } catch (FileNotFoundException e) {
+      // File could have been deleted in the interim
+      logger.warn("Could not find file: " + file, e);
+      return Optional.absent();
+    } catch (IOException e) {
+      logger.error("Exception opening file: " + file, e);
+      return Optional.absent();
     }
   }
 
@@ -494,6 +555,10 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
         SpoolDirectorySourceConfigurationConstants.DEFAULT_FILE_HEADER;
     private String fileNameHeader =
         SpoolDirectorySourceConfigurationConstants.DEFAULT_FILENAME_HEADER_KEY;
+    private Boolean annotateBaseName =
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_BASENAME_HEADER;
+    private String baseNameHeader =
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_BASENAME_HEADER_KEY;
     private String deserializerType =
         SpoolDirectorySourceConfigurationConstants.DEFAULT_DESERIALIZER;
     private Context deserializerContext = new Context();
@@ -501,7 +566,12 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
         SpoolDirectorySourceConfigurationConstants.DEFAULT_DELETE_POLICY;
     private String inputCharset =
         SpoolDirectorySourceConfigurationConstants.DEFAULT_INPUT_CHARSET;
-
+    private DecodeErrorPolicy decodeErrorPolicy = DecodeErrorPolicy.valueOf(
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_DECODE_ERROR_POLICY
+            .toUpperCase());
+    private ConsumeOrder consumeOrder = 
+        SpoolDirectorySourceConfigurationConstants.DEFAULT_CONSUME_ORDER;    
+    
     public Builder spoolDirectory(File directory) {
       this.spoolDirectory = directory;
       return this;
@@ -532,6 +602,16 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
       return this;
     }
 
+    public Builder annotateBaseName(Boolean annotateBaseName) {
+      this.annotateBaseName = annotateBaseName;
+      return this;
+    }
+
+    public Builder baseNameHeader(String baseNameHeader) {
+      this.baseNameHeader = baseNameHeader;
+      return this;
+    }
+
     public Builder deserializerType(String deserializerType) {
       this.deserializerType = deserializerType;
       return this;
@@ -552,10 +632,22 @@ public class ReliableSpoolingFileEventReader implements ReliableEventReader {
       return this;
     }
 
+    public Builder decodeErrorPolicy(DecodeErrorPolicy decodeErrorPolicy) {
+      this.decodeErrorPolicy = decodeErrorPolicy;
+      return this;
+    }
+    
+    public Builder consumeOrder(ConsumeOrder consumeOrder) {
+      this.consumeOrder = consumeOrder;
+      return this;
+    }        
+    
     public ReliableSpoolingFileEventReader build() throws IOException {
       return new ReliableSpoolingFileEventReader(spoolDirectory, completedSuffix,
           ignorePattern, trackerDirPath, annotateFileName, fileNameHeader,
-          deserializerType, deserializerContext, deletePolicy, inputCharset);
+          annotateBaseName, baseNameHeader, deserializerType,
+          deserializerContext, deletePolicy, inputCharset, decodeErrorPolicy,
+          consumeOrder);
     }
   }
 
